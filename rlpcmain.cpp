@@ -2,31 +2,65 @@
 #include "./ui_rlpcmain.h"
 #include <QFileDialog>
 #include <QMediaPlayer>
+#include <QMediaPlaylist>
+#include <QStandardItem>
 #include <QListWidget>
+#include <QTableView>
 #include <QTime>
-#include <iostream>
 
 bool isPlay = false;
 
 rlpcMain::rlpcMain(QWidget *parent)
   : QMainWindow(parent), ui(new Ui::rlpcMain){
       ui->setupUi(this);
-      player = new QMediaPlayer;
+
+      //data model for player playlist
+      playlist_IModel = new QStandardItemModel(this);
+      ui->playlistView->setModel(playlist_IModel);
+
+      ui->playlistView->hideColumn(1);
+
+      //Player elements
+      player = new QMediaPlayer(this);
+      playlist = new QMediaPlaylist(player);
+      player->setPlaylist(playlist);
+
+      //Events
       connect(player, SIGNAL(durationChanged(qint64)), SLOT(SetDuration(qint64)));
       connect(ui->timeslider, SIGNAL(sliderMoved(int)), SLOT(setTrackPos(int)));
       connect(player, SIGNAL(positionChanged(qint64)), SLOT(changeTrackPos(qint64)));
+      connect(ui->playlistView, &QTableView::doubleClicked, [this](const QModelIndex &index){
+              playlist->setCurrentIndex(index.row());
+          });
+      connect(playlist, &QMediaPlaylist::currentIndexChanged, [this](int index){
+          ui->trackName->setText(playlist_IModel->data(playlist_IModel->index(index, 0)).toString());
+      });
       //connect(player, SIGNAL(stateChanged(QMediaPlayer::State)), SLOT(StatusChanged(QMediaPlayer::State)));
+      //connect(playlist, SIGNAL(currentIndexChanged(int)), SLOT(playlistPositionChanged(int)));
+
+      //ui->trackImage->setBackgroundBrush(QImage(:""))
+
 }
 
 rlpcMain::~rlpcMain(){
+  delete playlist;
+  delete player;
   delete ui;
 }
 
 void rlpcMain::on_OpenFile_clicked(){
-  fileName = QFileDialog::getOpenFileName(this,
-      tr("mp3 files"), "", tr("mp3 files (*.mp3)"));
-  if(!fileName.isEmpty()){
-      ui->Playlist->addItem(fileName);
+  QStringList files = QFileDialog::getOpenFileNames(this,
+      tr("Audio files"), "", tr("Audio files (*.mp3)"));
+  //If file path not empty, add file to playlist.
+  if(!files.isEmpty()){
+     foreach (QString filePath, files) {
+            QList<QStandardItem *> items;
+            items.append(new QStandardItem(QDir(filePath).dirName()));
+            //items.append(new QStandardItem(filePath));
+            playlist_IModel->appendRow(items);
+            playlist->addMedia(QUrl(filePath));
+        }
+      //Enable buttons. If it is enabled when playlist is empty, player will crash.
       ui->Previous->setEnabled(true);
       ui->Play->setEnabled(true);
       ui->Next->setEnabled(true);
@@ -34,12 +68,13 @@ void rlpcMain::on_OpenFile_clicked(){
 }
 
 void rlpcMain::on_Play_clicked(){
-    QUrl file = QUrl::fromLocalFile(ui->Playlist->item(0)->text());
-    player->setMedia(file);
+    playlist->setCurrentIndex(1);
+    //delete this linez. (feature)
     player->setVolume(50);
     if(isPlay == false){
         player->play();
         isPlay = true;
+
       }else{
         player->pause();
         isPlay = false;

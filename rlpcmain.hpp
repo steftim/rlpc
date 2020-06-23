@@ -3,6 +3,7 @@
 
 #include <QMainWindow>
 #include <QMediaPlayer>
+#include <QStandardItem>
 
 QT_BEGIN_NAMESPACE
 namespace Ui { class rlpcMain; }
@@ -20,6 +21,8 @@ public:
 
   QString fileName;
   QMediaPlayer* player;
+  QMediaPlaylist* playlist;
+  QStandardItemModel* playlist_IModel;
 
 private slots:
   void on_OpenFile_clicked();
@@ -27,6 +30,7 @@ private slots:
 
   void SetDuration(qint64);
   //void StatusChanged(QMediaPlayer::State);
+  //void playlistPositionChanged(int)
   void setTrackPos(int);
   void changeTrackPos(qint64);
 
