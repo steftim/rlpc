@@ -34,6 +34,10 @@ private slots:
   void setTrackPos(int);
   void changeTrackPos(qint64);
 
+  void on_Previous_clicked();
+
+  void on_Next_clicked();
+
 private:
   Ui::rlpcMain *ui;
 };

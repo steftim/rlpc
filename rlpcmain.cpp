@@ -7,6 +7,7 @@
 #include <QListWidget>
 #include <QTableView>
 #include <QTime>
+#include <QMediaMetaData>
 
 bool isPlay = false;
 
@@ -18,12 +19,16 @@ rlpcMain::rlpcMain(QWidget *parent)
       playlist_IModel = new QStandardItemModel(this);
       ui->playlistView->setModel(playlist_IModel);
 
-      ui->playlistView->hideColumn(1);
+      //ui->playlistView->hideColumn(1);
+      ui->playlistView->horizontalHeader()->setStretchLastSection(true);
+//      ui->playlistView->horizontalHeader()->hide();
+//      ui->playlistView->verticalHeader()->hide();
 
       //Player elements
       player = new QMediaPlayer(this);
       playlist = new QMediaPlaylist(player);
       player->setPlaylist(playlist);
+      playlist->setCurrentIndex(0);
 
       //Events
       connect(player, SIGNAL(durationChanged(qint64)), SLOT(SetDuration(qint64)));
@@ -55,7 +60,7 @@ void rlpcMain::on_OpenFile_clicked(){
   if(!files.isEmpty()){
      foreach (QString filePath, files) {
             QList<QStandardItem *> items;
-            items.append(new QStandardItem(QDir(filePath).dirName()));
+            items.append(new QStandardItem(QMediaMetaData::Title(filePath)));
             //items.append(new QStandardItem(filePath));
             playlist_IModel->appendRow(items);
             playlist->addMedia(QUrl(filePath));
@@ -68,7 +73,7 @@ void rlpcMain::on_OpenFile_clicked(){
 }
 
 void rlpcMain::on_Play_clicked(){
-    playlist->setCurrentIndex(1);
+    //playlist->setCurrentIndex(1);
     //delete this linez. (feature)
     player->setVolume(50);
     if(isPlay == false){
@@ -102,4 +107,12 @@ void rlpcMain::setTrackPos(int pos){
 void rlpcMain::changeTrackPos(qint64 pos){
     ui->timeslider->setValue(pos);
     ui->time->setText(timeToString(pos));
+}
+
+void rlpcMain::on_Previous_clicked(){
+             playlist->setCurrentIndex(playlist->previousIndex());
+}
+
+void rlpcMain::on_Next_clicked(){
+    playlist->setCurrentIndex(playlist->nextIndex());
 }

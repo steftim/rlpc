@@ -30,9 +30,9 @@
     <property name="geometry">
      <rect>
       <x>0</x>
-      <y>400</y>
+      <y>390</y>
       <width>621</width>
-      <height>51</height>
+      <height>61</height>
      </rect>
     </property>
     <property name="frameShape">
@@ -48,7 +48,7 @@
      <property name="geometry">
       <rect>
        <x>520</x>
-       <y>10</y>
+       <y>20</y>
        <width>41</width>
        <height>41</height>
       </rect>
@@ -89,7 +89,7 @@
      <property name="geometry">
       <rect>
        <x>470</x>
-       <y>10</y>
+       <y>20</y>
        <width>41</width>
        <height>41</height>
       </rect>
@@ -121,42 +121,42 @@
      <property name="geometry">
       <rect>
        <x>70</x>
-       <y>10</y>
-       <width>231</width>
+       <y>20</y>
+       <width>321</width>
        <height>18</height>
       </rect>
      </property>
      <property name="font">
       <font>
-       <pointsize>10</pointsize>
+       <pointsize>9</pointsize>
       </font>
      </property>
      <property name="styleSheet">
       <string notr="true">color: white;</string>
      </property>
      <property name="text">
-      <string>track name</string>
+      <string/>
      </property>
     </widget>
     <widget class="QLabel" name="trackAuthor">
      <property name="geometry">
       <rect>
        <x>70</x>
-       <y>30</y>
-       <width>231</width>
+       <y>40</y>
+       <width>281</width>
        <height>18</height>
       </rect>
      </property>
      <property name="font">
       <font>
-       <pointsize>10</pointsize>
+       <pointsize>9</pointsize>
       </font>
      </property>
      <property name="styleSheet">
       <string notr="true">color: white;</string>
      </property>
      <property name="text">
-      <string>author</string>
+      <string/>
      </property>
     </widget>
     <widget class="QPushButton" name="Next">
@@ -166,7 +166,7 @@
      <property name="geometry">
       <rect>
        <x>570</x>
-       <y>10</y>
+       <y>20</y>
        <width>41</width>
        <height>41</height>
       </rect>
@@ -198,7 +198,7 @@
      <property name="geometry">
       <rect>
        <x>10</x>
-       <y>10</y>
+       <y>20</y>
        <width>41</width>
        <height>41</height>
       </rect>
@@ -226,9 +226,9 @@
      <property name="geometry">
       <rect>
        <x>0</x>
-       <y>-5</y>
+       <y>-9</y>
        <width>621</width>
-       <height>21</height>
+       <height>20</height>
       </rect>
      </property>
      <property name="styleSheet">
@@ -261,7 +261,7 @@ background-color: transparent;</string>
      <property name="geometry">
       <rect>
        <x>260</x>
-       <y>30</y>
+       <y>40</y>
        <width>51</width>
        <height>21</height>
       </rect>
@@ -285,7 +285,7 @@ background-color: transparent;</string>
      <property name="geometry">
       <rect>
        <x>340</x>
-       <y>30</y>
+       <y>40</y>
        <width>51</width>
        <height>21</height>
       </rect>
@@ -350,17 +350,24 @@ background-color: transparent;</string>
       <x>0</x>
       <y>20</y>
       <width>621</width>
-      <height>381</height>
+      <height>371</height>
      </rect>
     </property>
+    <property name="mouseTracking">
+     <bool>false</bool>
+    </property>
     <property name="styleSheet">
-     <string notr="true">background-color: transparent;</string>
+     <string notr="true">background-color: transparent;
+color: white;</string>
     </property>
     <property name="frameShape">
      <enum>QFrame::NoFrame</enum>
     </property>
+    <property name="editTriggers">
+     <set>QAbstractItemView::NoEditTriggers</set>
+    </property>
     <property name="dragEnabled">
-     <bool>true</bool>
+     <bool>false</bool>
     </property>
     <property name="iconSize">
      <size>
@@ -368,9 +375,21 @@ background-color: transparent;</string>
       <height>16</height>
      </size>
     </property>
+    <property name="showGrid">
+     <bool>false</bool>
+    </property>
     <property name="gridStyle">
      <enum>Qt::NoPen</enum>
     </property>
+    <property name="wordWrap">
+     <bool>false</bool>
+    </property>
+    <attribute name="horizontalHeaderVisible">
+     <bool>false</bool>
+    </attribute>
+    <attribute name="verticalHeaderVisible">
+     <bool>false</bool>
+    </attribute>
    </widget>
   </widget>
  </widget>
