@@ -9,9 +9,9 @@ In the plans:
 - cute playlist with covers :3
 
 Compile:
-  git clone https://github.com/steftim/rlpc.git
-  cd rlpc
-  cmake ./ && make
+-  git clone https://github.com/steftim/rlpc.git
+-  cd rlpc
+-  cmake ./ && make
 
 Dependencies:
 - gstreamer
