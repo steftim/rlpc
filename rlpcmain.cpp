@@ -57,7 +57,7 @@ rlpcMain::~rlpcMain(){
 
 void rlpcMain::on_OpenFile_clicked(){
   QStringList files = QFileDialog::getOpenFileNames(this,
-      tr("Audio files"), "", tr("Audio files (*.mp3)"));
+      tr("Audio files"), "", tr("Audio files (*.mp3, *.flac)"));
   //If file path not empty, add file to playlist.
   if(!files.isEmpty()){
      foreach (QString filePath, files) {
