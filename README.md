@@ -1,7 +1,7 @@
 # rlpc
 rlpc music player
 
-#Anarchy reigns here. At your own risk.
+# Anarchy reigns here. At your own risk.
 
 In the plans:
 - Yandex music support
