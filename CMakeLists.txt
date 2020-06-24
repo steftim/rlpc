@@ -27,6 +27,7 @@ set(CMAKE_CXX_STANDARD_REQUIRED ON)
 find_package(Qt5 COMPONENTS Widgets REQUIRED)
 find_package(Qt5 COMPONENTS Multimedia REQUIRED)
 find_package(Qt5 COMPONENTS Svg REQUIRED)
+find_package(TagLib)
 
 if(ANDROID)
   add_library(rlpc SHARED
@@ -44,4 +45,4 @@ else()
   )
 endif()
 
-target_link_libraries(rlpc PRIVATE Qt5::Widgets Qt5::Multimedia Qt5::Svg)
+target_link_libraries(rlpc PRIVATE Qt5::Widgets Qt5::Multimedia Qt5::Svg tag)

@@ -8,6 +8,8 @@
 #include <QTableView>
 #include <QTime>
 #include <QMediaMetaData>
+#include <taglib/tag.h>
+#include <taglib/fileref.h>
 
 bool isPlay = false;
 
@@ -60,10 +62,10 @@ void rlpcMain::on_OpenFile_clicked(){
   if(!files.isEmpty()){
      foreach (QString filePath, files) {
             QList<QStandardItem *> items;
-            items.append(new QStandardItem(QDir(filePath).dirName()));
-            //items.append(new QStandardItem(filePath));
+            TagLib::FileRef track(QString(filePath).toStdString().c_str());
+            items.append(new QStandardItem(TagLib::String(track.tag()->title()).toCString()));
             playlist_IModel->appendRow(items);
-            playlist->addMedia(QUrl(filePath));
+            playlist->addMedia(QUrl::fromLocalFile(filePath));
         }
       //Enable buttons. If it is enabled when playlist is empty, player will crash.
       ui->Previous->setEnabled(true);
