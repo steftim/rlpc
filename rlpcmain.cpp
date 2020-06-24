@@ -60,7 +60,7 @@ void rlpcMain::on_OpenFile_clicked(){
   if(!files.isEmpty()){
      foreach (QString filePath, files) {
             QList<QStandardItem *> items;
-            items.append(new QStandardItem(QMediaMetaData::Title(filePath)));
+            items.append(new QStandardItem(QDir(filePath).dirName()));
             //items.append(new QStandardItem(filePath));
             playlist_IModel->appendRow(items);
             playlist->addMedia(QUrl(filePath));
@@ -74,7 +74,11 @@ void rlpcMain::on_OpenFile_clicked(){
 
 void rlpcMain::on_Play_clicked(){
     //playlist->setCurrentIndex(1);
-    //delete this linez. (feature)
+    setWindowTitle(QString(player->metaData(QMediaMetaData::Title).toString()));
+    qDebug(QString(player->metaData(QMediaMetaData::Title).toString()).toStdString().c_str());
+    ui->trackName->setText(QString(player->metaData(QMediaMetaData::Title).toString()));
+    ui->trackAuthor->setText(QString(player->metaData(QMediaMetaData::AlbumArtist).toString()));
+    //delete this line. (feature)
     player->setVolume(50);
     if(isPlay == false){
         player->play();

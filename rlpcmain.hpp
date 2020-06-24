@@ -17,13 +17,6 @@ public:
   rlpcMain(QWidget *parent = nullptr);
   ~rlpcMain();
 
-  QString timeToString(qint64);
-
-  QString fileName;
-  QMediaPlayer* player;
-  QMediaPlaylist* playlist;
-  QStandardItemModel* playlist_IModel;
-
 private slots:
   void on_OpenFile_clicked();
   void on_Play_clicked();
@@ -40,5 +33,12 @@ private slots:
 
 private:
   Ui::rlpcMain *ui;
+
+  QString timeToString(qint64);
+
+  QString fileName;
+  QMediaPlayer* player;
+  QMediaPlaylist* playlist;
+  QStandardItemModel* playlist_IModel;
 };
 #endif // RLPCMAIN_HPP
