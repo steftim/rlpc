@@ -23,6 +23,9 @@
    <string>rlpc</string>
   </property>
   <widget class="QWidget" name="centralwidget">
+   <property name="styleSheet">
+    <string notr="true">background-color: #232629;</string>
+   </property>
    <widget class="QFrame" name="frame">
     <property name="geometry">
      <rect>
@@ -128,6 +131,9 @@
        <pointsize>10</pointsize>
       </font>
      </property>
+     <property name="styleSheet">
+      <string notr="true">color: white;</string>
+     </property>
      <property name="text">
       <string>track name</string>
      </property>
@@ -145,6 +151,9 @@
       <font>
        <pointsize>10</pointsize>
       </font>
+     </property>
+     <property name="styleSheet">
+      <string notr="true">color: white;</string>
      </property>
      <property name="text">
       <string>author</string>
@@ -323,6 +332,9 @@ background-color: transparent;</string>
        <width>61</width>
        <height>21</height>
       </rect>
+     </property>
+     <property name="styleSheet">
+      <string notr="true">color: white;</string>
      </property>
      <property name="text">
       <string>add</string>
