@@ -7,11 +7,10 @@
 #include <QListWidget>
 #include <QTableView>
 #include <QTime>
+#include <QSvgWidget>
 #include <QMediaMetaData>
 #include <taglib/tag.h>
 #include <taglib/fileref.h>
-
-bool isPlay = false;
 
 rlpcMain::rlpcMain(QWidget *parent)
   : QMainWindow(parent), ui(new Ui::rlpcMain){
@@ -21,10 +20,7 @@ rlpcMain::rlpcMain(QWidget *parent)
       playlist_IModel = new QStandardItemModel(this);
       ui->playlistView->setModel(playlist_IModel);
 
-      //ui->playlistView->hideColumn(1);
       ui->playlistView->horizontalHeader()->setStretchLastSection(true);
-//      ui->playlistView->horizontalHeader()->hide();
-//      ui->playlistView->verticalHeader()->hide();
 
       //Player elements
       player = new QMediaPlayer(this);
@@ -32,21 +28,22 @@ rlpcMain::rlpcMain(QWidget *parent)
       player->setPlaylist(playlist);
       playlist->setCurrentIndex(0);
 
+      ui->theme->addItem("white");
+      ui->theme->addItem("black");
+
       //Events
       connect(player, SIGNAL(durationChanged(qint64)), SLOT(SetDuration(qint64)));
       connect(ui->timeslider, SIGNAL(sliderMoved(int)), SLOT(setTrackPos(int)));
       connect(player, SIGNAL(positionChanged(qint64)), SLOT(changeTrackPos(qint64)));
-      connect(ui->playlistView, &QTableView::doubleClicked, [this](const QModelIndex &index){
+      connect(ui->playlistView, &QTableView::clicked, [this](const QModelIndex &index){
               playlist->setCurrentIndex(index.row());
+              trackTags();
           });
-      connect(playlist, &QMediaPlaylist::currentIndexChanged, [this](int index){
-          ui->trackName->setText(playlist_IModel->data(playlist_IModel->index(index, 0)).toString());
-      });
-      //connect(player, SIGNAL(stateChanged(QMediaPlayer::State)), SLOT(StatusChanged(QMediaPlayer::State)));
-      //connect(playlist, SIGNAL(currentIndexChanged(int)), SLOT(playlistPositionChanged(int)));
-
-      //ui->trackImage->setBackgroundBrush(QImage(:""))
-
+      connect(player, SIGNAL(stateChanged(QMediaPlayer::State)), SLOT(StatusChanged(QMediaPlayer::State)));
+      //theme changer
+      connect(ui->theme, SIGNAL(currentTextChanged(const QString)), SLOT(changeTheme(QString)));
+      connect(playlist, SIGNAL(currentIndexChanged(int)), SLOT(trackTags(void)));
+      changeTheme("white");
 }
 
 rlpcMain::~rlpcMain(){
@@ -55,9 +52,9 @@ rlpcMain::~rlpcMain(){
   delete ui;
 }
 
-void rlpcMain::on_OpenFile_clicked(){
+void rlpcMain::on_OpenFile_clicked(void){
   QStringList files = QFileDialog::getOpenFileNames(this,
-      tr("Audio files"), "", tr("Audio files (*.mp3, *.flac)"));
+      tr("Open File"), "", tr("Audio Files (*.mp3 *.flac *.m4a)"));
   //If file path not empty, add file to playlist.
   if(!files.isEmpty()){
      foreach (QString filePath, files) {
@@ -74,30 +71,22 @@ void rlpcMain::on_OpenFile_clicked(){
     }
 }
 
-void rlpcMain::on_Play_clicked(){
-    //playlist->setCurrentIndex(1);
-    setWindowTitle(QString(player->metaData(QMediaMetaData::Title).toString()));
-    qDebug(QString(player->metaData(QMediaMetaData::Title).toString()).toStdString().c_str());
-    ui->trackName->setText(QString(player->metaData(QMediaMetaData::Title).toString()));
-    ui->trackAuthor->setText(QString(player->metaData(QMediaMetaData::AlbumArtist).toString()));
+void rlpcMain::on_Play_clicked(void){
     //delete this line. (feature)
     player->setVolume(50);
-    if(isPlay == false){
+    if(player->state() != QMediaPlayer::PlayingState){
         player->play();
-        isPlay = true;
-
       }else{
         player->pause();
-        isPlay = false;
       }
 }
 
 QString rlpcMain::timeToString(qint64 time){
-  int dHours = (time / (60 * 60 * 1000));
-  int dMinutes = ((time % (60 * 60 * 1000)) / (60 * 1000));
-  int dSeconds = ((time % (60 * 1000)) / 1000);
+  int hrs = (time / (60 * 60 * 1000));
+  int min = ((time % (60 * 60 * 1000)) / (60 * 1000));
+  int sec = ((time % (60 * 1000)) / 1000);
 
-  return QTime(dHours, dMinutes, dSeconds).toString("hh:mm:ss");
+  return QTime(hrs, min, sec).toString("hh:mm:ss");
 }
 
 void rlpcMain::SetDuration(qint64 duration){
@@ -115,10 +104,54 @@ void rlpcMain::changeTrackPos(qint64 pos){
     ui->time->setText(timeToString(pos));
 }
 
-void rlpcMain::on_Previous_clicked(){
+void rlpcMain::on_Previous_clicked(void){
              playlist->setCurrentIndex(playlist->previousIndex());
 }
 
-void rlpcMain::on_Next_clicked(){
+void rlpcMain::on_Next_clicked(void){
     playlist->setCurrentIndex(playlist->nextIndex());
+}
+
+void rlpcMain::StatusChanged(QMediaPlayer::State state){
+    if(state == QMediaPlayer::PlayingState){
+        ui->Play->setIcon(QIcon("res/pause_" + ui->theme->currentText() + ".svg"));
+    }else{
+        ui->Play->setIcon(QIcon("res/play_" + ui->theme->currentText() + ".svg"));
+    }
+}
+
+void rlpcMain::changeTheme(QString theme){
+    if(theme == "white"){
+        StatusChanged(player->state());
+        ui->Next->setIcon(QIcon("res/next_white.svg"));
+        ui->Previous->setIcon(QIcon("res/prev_white.svg"));
+        ui->main->setStyleSheet("background-color: #eff0f1;");
+        ui->playlistView->setStyleSheet("color: black;");
+        ui->trackName->setStyleSheet("color: black;");
+        ui->trackAuthor->setStyleSheet("color: black;");
+        ui->OpenFile->setStyleSheet("color: black;");
+        ui->time->setStyleSheet("color: black;");
+        ui->duration->setStyleSheet("color: black;");
+        ui->theme->setStyleSheet("color: black;");
+    }else if(theme == "black"){
+        StatusChanged(player->state());
+        ui->Next->setIcon(QIcon("res/next_black.svg"));
+        ui->Previous->setIcon(QIcon("res/prev_black.svg"));
+        ui->main->setStyleSheet("background-color: #31363b;");
+        ui->playlistView->setStyleSheet("color: white;");
+        ui->trackName->setStyleSheet("color: white;");
+        ui->trackAuthor->setStyleSheet("color: white;");
+        ui->OpenFile->setStyleSheet("color: white;");
+        ui->time->setStyleSheet("color: white;");
+        ui->duration->setStyleSheet("color: white;");
+        ui->theme->setStyleSheet("color: white;");
+    }
+}
+
+void rlpcMain::trackTags(void){
+    if(!player->currentMedia().canonicalUrl().isEmpty()){
+        TagLib::FileRef currentTrack(player->currentMedia().canonicalUrl().toString().remove(0,7).toStdString().c_str());          //ui->trackName->setText(TagLib::String(currentTrack.tag()->title().toCString()));
+        ui->trackAuthor->setText(currentTrack.tag()->artist().toCString());
+        ui->trackName->setText(currentTrack.tag()->title().toCString());
+    }
 }

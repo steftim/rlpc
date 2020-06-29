@@ -22,11 +22,11 @@
   <property name="windowTitle">
    <string>rlpc</string>
   </property>
-  <widget class="QWidget" name="centralwidget">
+  <widget class="QWidget" name="main">
    <property name="styleSheet">
-    <string notr="true">background-color: #232629;</string>
+    <string notr="true"/>
    </property>
-   <widget class="QFrame" name="frame">
+   <widget class="QFrame" name="bottom">
     <property name="geometry">
      <rect>
       <x>0</x>
@@ -61,10 +61,6 @@
      </property>
      <property name="text">
       <string/>
-     </property>
-     <property name="icon">
-      <iconset>
-       <normaloff>res/play.svg</normaloff>res/play.svg</iconset>
      </property>
      <property name="iconSize">
       <size>
@@ -103,10 +99,6 @@
      <property name="text">
       <string/>
      </property>
-     <property name="icon">
-      <iconset>
-       <normaloff>res/prev.svg</normaloff>res/prev.svg</iconset>
-     </property>
      <property name="iconSize">
       <size>
        <width>32</width>
@@ -132,7 +124,7 @@
       </font>
      </property>
      <property name="styleSheet">
-      <string notr="true">color: white;</string>
+      <string notr="true"/>
      </property>
      <property name="text">
       <string/>
@@ -153,7 +145,7 @@
       </font>
      </property>
      <property name="styleSheet">
-      <string notr="true">color: white;</string>
+      <string notr="true"/>
      </property>
      <property name="text">
       <string/>
@@ -181,8 +173,8 @@
       <string/>
      </property>
      <property name="icon">
-      <iconset>
-       <normaloff>res/next.svg</normaloff>res/next.svg</iconset>
+      <iconset theme="Breeze_dark">
+       <normaloff>.</normaloff>.</iconset>
      </property>
      <property name="iconSize">
       <size>
@@ -309,7 +301,7 @@ background-color: transparent;</string>
      </property>
     </widget>
    </widget>
-   <widget class="QFrame" name="frame_2">
+   <widget class="QFrame" name="top">
     <property name="geometry">
      <rect>
       <x>0</x>
@@ -334,13 +326,32 @@ background-color: transparent;</string>
       </rect>
      </property>
      <property name="styleSheet">
-      <string notr="true">color: white;</string>
+      <string notr="true">color: black;</string>
      </property>
      <property name="text">
       <string>add</string>
      </property>
      <property name="flat">
       <bool>true</bool>
+     </property>
+    </widget>
+    <widget class="QComboBox" name="theme">
+     <property name="geometry">
+      <rect>
+       <x>0</x>
+       <y>0</y>
+       <width>101</width>
+       <height>21</height>
+      </rect>
+     </property>
+     <property name="currentIndex">
+      <number>-1</number>
+     </property>
+     <property name="maxVisibleItems">
+      <number>2</number>
+     </property>
+     <property name="maxCount">
+      <number>2</number>
      </property>
     </widget>
    </widget>
@@ -357,8 +368,7 @@ background-color: transparent;</string>
      <bool>false</bool>
     </property>
     <property name="styleSheet">
-     <string notr="true">background-color: transparent;
-color: white;</string>
+     <string notr="true">background-color: transparent;</string>
     </property>
     <property name="frameShape">
      <enum>QFrame::NoFrame</enum>

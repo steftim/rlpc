@@ -27,7 +27,6 @@ set(CMAKE_CXX_STANDARD_REQUIRED ON)
 find_package(Qt5 COMPONENTS Widgets REQUIRED)
 find_package(Qt5 COMPONENTS Multimedia REQUIRED)
 find_package(Qt5 COMPONENTS Svg REQUIRED)
-find_package(TagLib)
 
 if(ANDROID)
   add_library(rlpc SHARED

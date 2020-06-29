@@ -18,18 +18,17 @@ public:
   ~rlpcMain();
 
 private slots:
-  void on_OpenFile_clicked();
-  void on_Play_clicked();
+  void on_OpenFile_clicked(void);
+  void on_Play_clicked(void);
+  void on_Previous_clicked(void);
+  void on_Next_clicked(void);
 
   void SetDuration(qint64);
-  //void StatusChanged(QMediaPlayer::State);
-  //void playlistPositionChanged(int)
+  void StatusChanged(QMediaPlayer::State);
   void setTrackPos(int);
   void changeTrackPos(qint64);
-
-  void on_Previous_clicked();
-
-  void on_Next_clicked();
+  void changeTheme(QString);
+  void trackTags(void);
 
 private:
   Ui::rlpcMain *ui;
