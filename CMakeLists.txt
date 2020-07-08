@@ -1,6 +1,6 @@
 cmake_minimum_required(VERSION 3.5)
 
-project(rlpc LANGUAGES CXX)
+project(rlpc LANGUAGES CXX C)
 
 set(CMAKE_INCLUDE_CURRENT_DIR ON)
 
@@ -27,21 +27,32 @@ set(CMAKE_CXX_STANDARD_REQUIRED ON)
 find_package(Qt5 COMPONENTS Widgets REQUIRED)
 find_package(Qt5 COMPONENTS Multimedia REQUIRED)
 find_package(Qt5 COMPONENTS Svg REQUIRED)
+find_package(Qt5 COMPONENTS Network REQUIRED)
 
-if(ANDROID)
-  add_library(rlpc SHARED
-    main.cpp
-    rlpcmain.cpp
-    rlpcmain.hpp
-    rlpcmain.ui
-  )
-else()
+#if(ANDROID)
+#  add_library(rlpc SHARED
+#    main.cpp
+#    rlpcmain.cpp
+#    rlpcmain.hpp
+#    rlpcmain.ui
+#    search.ui
+#    yandex_api.h
+#    yandex_api.c
+#    search.cpp
+#    search.hpp
+#  )
+#else()
   add_executable(rlpc
     main.cpp
     rlpcmain.cpp
     rlpcmain.hpp
     rlpcmain.ui
+    search.ui
+    yandex_api.h
+    yandex_api.c
+    search.cpp
+    search.hpp
   )
-endif()
+#endif()
 
-target_link_libraries(rlpc PRIVATE Qt5::Widgets Qt5::Multimedia Qt5::Svg tag)
+target_link_libraries(rlpc PRIVATE Qt5::Widgets Qt5::Multimedia Qt5::Svg Qt5::Network tag curl cjson)

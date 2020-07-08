@@ -1,13 +1,17 @@
-#ifndef RLPCMAIN_HPP
-#define RLPCMAIN_HPP
+#pragma once
 
 #include <QMainWindow>
 #include <QMediaPlayer>
 #include <QStandardItem>
+#include <QNetworkReply>
 
 QT_BEGIN_NAMESPACE
-namespace Ui { class rlpcMain; }
+namespace Ui {
+    class rlpcMain;
+}
 QT_END_NAMESPACE
+
+void createSearchWindow(void);
 
 class rlpcMain : public QMainWindow
 {
@@ -16,6 +20,15 @@ class rlpcMain : public QMainWindow
 public:
   rlpcMain(QWidget *parent = nullptr);
   ~rlpcMain();
+
+  class yandex_api;
+
+  class yandex_api{
+  public:
+      void search(QString);
+  private:
+      void onfinish(QNetworkReply*);
+  };
 
 private slots:
   void on_OpenFile_clicked(void);
@@ -30,6 +43,8 @@ private slots:
   void changeTheme(QString);
   void trackTags(void);
 
+  void on_search_clicked();
+  
 private:
   Ui::rlpcMain *ui;
 
@@ -40,4 +55,3 @@ private:
   QMediaPlaylist* playlist;
   QStandardItemModel* playlist_IModel;
 };
-#endif // RLPCMAIN_HPP

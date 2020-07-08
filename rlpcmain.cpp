@@ -1,5 +1,7 @@
 #include "rlpcmain.hpp"
 #include "./ui_rlpcmain.h"
+#include "search.hpp"
+
 #include <QFileDialog>
 #include <QMediaPlayer>
 #include <QMediaPlaylist>
@@ -12,8 +14,7 @@
 #include <taglib/tag.h>
 #include <taglib/fileref.h>
 
-rlpcMain::rlpcMain(QWidget *parent)
-  : QMainWindow(parent), ui(new Ui::rlpcMain){
+rlpcMain::rlpcMain(QWidget *parent) : QMainWindow(parent), ui(new Ui::rlpcMain){
       ui->setupUi(this);
 
       //data model for player playlist
@@ -44,6 +45,8 @@ rlpcMain::rlpcMain(QWidget *parent)
       connect(ui->theme, SIGNAL(currentTextChanged(const QString)), SLOT(changeTheme(QString)));
       connect(playlist, SIGNAL(currentIndexChanged(int)), SLOT(trackTags(void)));
       changeTheme("white");
+
+      extern search search_w;
 }
 
 rlpcMain::~rlpcMain(){
@@ -72,8 +75,7 @@ void rlpcMain::on_OpenFile_clicked(void){
 }
 
 void rlpcMain::on_Play_clicked(void){
-    //delete this line. (feature)
-    player->setVolume(50);
+    player->setVolume(50); //delete this line. (feature)
     if(player->state() != QMediaPlayer::PlayingState){
         player->play();
       }else{
@@ -86,7 +88,10 @@ QString rlpcMain::timeToString(qint64 time){
   int min = ((time % (60 * 60 * 1000)) / (60 * 1000));
   int sec = ((time % (60 * 1000)) / 1000);
 
-  return QTime(hrs, min, sec).toString("hh:mm:ss");
+  if(hrs == 0)
+    return QTime(hrs, min, sec).toString("mm:ss");
+  else
+    return QTime(hrs, min, sec).toString("hh:mm:ss");
 }
 
 void rlpcMain::SetDuration(qint64 duration){
@@ -133,6 +138,8 @@ void rlpcMain::changeTheme(QString theme){
         ui->time->setStyleSheet("color: black;");
         ui->duration->setStyleSheet("color: black;");
         ui->theme->setStyleSheet("color: black;");
+        ui->replay->setStyleSheet("color: black;");
+        ui->search->setStyleSheet("color: black;");
     }else if(theme == "black"){
         StatusChanged(player->state());
         ui->Next->setIcon(QIcon("res/next_black.svg"));
@@ -145,6 +152,8 @@ void rlpcMain::changeTheme(QString theme){
         ui->time->setStyleSheet("color: white;");
         ui->duration->setStyleSheet("color: white;");
         ui->theme->setStyleSheet("color: white;");
+        ui->replay->setStyleSheet("color: white;");
+        ui->search->setStyleSheet("color: white;");
     }
 }
 
@@ -154,4 +163,9 @@ void rlpcMain::trackTags(void){
         ui->trackAuthor->setText(currentTrack.tag()->artist().toCString());
         ui->trackName->setText(currentTrack.tag()->title().toCString());
     }
+}
+
+void rlpcMain::on_search_clicked(){
+    search search_w;
+    search_w.exec();
 }
