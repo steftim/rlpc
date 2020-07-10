@@ -18,3 +18,5 @@ Dependencies:
 - gstreamer-plugins-good
 - qt5
 - taglib
+- libcurl
+- cJSON
