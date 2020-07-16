@@ -119,17 +119,17 @@ void rlpcMain::on_Next_clicked(void){
 
 void rlpcMain::StatusChanged(QMediaPlayer::State state){
     if(state == QMediaPlayer::PlayingState){
-        ui->Play->setIcon(QIcon("res/pause_" + ui->theme->currentText() + ".svg"));
+        ui->Play->setIcon(QIcon(icon_path + "res/pause_" + ui->theme->currentText() + ".svg"));
     }else{
-        ui->Play->setIcon(QIcon("res/play_" + ui->theme->currentText() + ".svg"));
+        ui->Play->setIcon(QIcon(icon_path + "res/play_" + ui->theme->currentText() + ".svg"));
     }
 }
 
 void rlpcMain::changeTheme(QString theme){
     if(theme == "white"){
         StatusChanged(player->state());
-        ui->Next->setIcon(QIcon("res/next_white.svg"));
-        ui->Previous->setIcon(QIcon("res/prev_white.svg"));
+        ui->Next->setIcon(QIcon(icon_path + "res/next_white.svg"));
+        ui->Previous->setIcon(QIcon(icon_path + "res/prev_white.svg"));
         ui->main->setStyleSheet("background-color: #eff0f1;");
         ui->playlistView->setStyleSheet("color: black;");
         ui->trackName->setStyleSheet("color: black;");
@@ -142,8 +142,8 @@ void rlpcMain::changeTheme(QString theme){
         ui->search->setStyleSheet("color: black;");
     }else if(theme == "black"){
         StatusChanged(player->state());
-        ui->Next->setIcon(QIcon("res/next_black.svg"));
-        ui->Previous->setIcon(QIcon("res/prev_black.svg"));
+        ui->Next->setIcon(QIcon(icon_path + "res/next_black.svg"));
+        ui->Previous->setIcon(QIcon(icon_path + "res/prev_black.svg"));
         ui->main->setStyleSheet("background-color: #31363b;");
         ui->playlistView->setStyleSheet("color: white;");
         ui->trackName->setStyleSheet("color: white;");
