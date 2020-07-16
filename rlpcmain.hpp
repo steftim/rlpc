@@ -5,6 +5,8 @@
 #include <QStandardItem>
 #include <QNetworkReply>
 
+QString icon_path = "/usr/share/rlpc/res/";
+
 QT_BEGIN_NAMESPACE
 namespace Ui {
     class rlpcMain;
