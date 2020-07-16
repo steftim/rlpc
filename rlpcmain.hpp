@@ -5,8 +5,6 @@
 #include <QStandardItem>
 #include <QNetworkReply>
 
-QString icon_path = "/usr/share/rlpc/res/";
-
 QT_BEGIN_NAMESPACE
 namespace Ui {
     class rlpcMain;
@@ -22,15 +20,6 @@ class rlpcMain : public QMainWindow
 public:
   rlpcMain(QWidget *parent = nullptr);
   ~rlpcMain();
-
-  class yandex_api;
-
-  class yandex_api{
-  public:
-      void search(QString);
-  private:
-      void onfinish(QNetworkReply*);
-  };
 
 private slots:
   void on_OpenFile_clicked(void);
@@ -49,6 +38,8 @@ private slots:
   
 private:
   Ui::rlpcMain *ui;
+  
+  QString icon_path = "";
 
   QString timeToString(qint64);
 
