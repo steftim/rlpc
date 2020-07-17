@@ -1,11 +1,9 @@
 #include "search.hpp"
 #include "./ui_search.h"
 #include <QDialog>
-#include <QDebug>
-extern "C" {
-#include <yandex_api.h>
-}
-#include <curl/curl.h>
+//extern "C" {
+//#include "yandexmusic.h"
+//}
 #include <string.h>
 
 search::search(QWidget *parent) : QDialog(parent), ui(new Ui::search){
@@ -17,5 +15,11 @@ search::~search(){
 }
 
 void search::on_search_button_clicked(){
-    yandex_search((char*)ui->search_prompt->text().toStdString().c_str());
+    /*
+     *   *** fuche ***
+     *
+     *     tracks rdata;
+     *   yam_search((char*)ui->search_prompt->text().toStdString().c_str(), rdata);
+     *
+     */
 }

@@ -33,12 +33,17 @@ private slots:
   void changeTrackPos(qint64);
   void changeTheme(QString);
   void trackTags(void);
+  void playlistUpdate(void);
 
   void on_search_clicked();
-  
+
+  void on_replay_toggled(bool checked);
+
+  void on_playlistView_clicked(const QModelIndex &index);
+
 private:
   Ui::rlpcMain *ui;
-  
+
   QString icon_path = "";
 
   QString timeToString(qint64);

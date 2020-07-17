@@ -48,11 +48,10 @@ find_package(Qt5 COMPONENTS Network REQUIRED)
     rlpcmain.hpp
     rlpcmain.ui
     search.ui
-    yandex_api.h
-    yandex_api.c
+    yandexmusic.h
     search.cpp
     search.hpp
   )
 #endif()
 
-target_link_libraries(rlpc PRIVATE Qt5::Widgets Qt5::Multimedia Qt5::Svg Qt5::Network tag curl cjson)
+target_link_libraries(rlpc PRIVATE Qt5::Widgets Qt5::Multimedia Qt5::Svg Qt5::Network tag yandexmusic)

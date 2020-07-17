@@ -36,17 +36,15 @@ rlpcMain::rlpcMain(QWidget *parent) : QMainWindow(parent), ui(new Ui::rlpcMain){
       connect(player, SIGNAL(durationChanged(qint64)), SLOT(SetDuration(qint64)));
       connect(ui->timeslider, SIGNAL(sliderMoved(int)), SLOT(setTrackPos(int)));
       connect(player, SIGNAL(positionChanged(qint64)), SLOT(changeTrackPos(qint64)));
-      connect(ui->playlistView, &QTableView::clicked, [this](const QModelIndex &index){
-              playlist->setCurrentIndex(index.row());
-              trackTags();
-          });
       connect(player, SIGNAL(stateChanged(QMediaPlayer::State)), SLOT(StatusChanged(QMediaPlayer::State)));
+      connect(playlist, SIGNAL(currentMediaChanged(const QMediaContent)), SLOT(playlistUpdate(void)));
       //theme changer
       connect(ui->theme, SIGNAL(currentTextChanged(const QString)), SLOT(changeTheme(QString)));
       connect(playlist, SIGNAL(currentMediaChanged(const QMediaContent)), SLOT(trackTags(void)));
       changeTheme("white");
 
       extern search search_w;
+      ui->replay->setCheckable(true);
 }
 
 rlpcMain::~rlpcMain(){
@@ -165,7 +163,34 @@ void rlpcMain::trackTags(void){
     }
 }
 
+void rlpcMain::playlistUpdate(void){
+    ui->playlistView->selectRow(playlist->currentIndex());
+    trackTags();
+}
+
+void rlpcMain::on_playlistView_clicked(const QModelIndex &index){
+    playlist->setCurrentIndex(index.row());
+    trackTags();
+}
+
+
+/*
+ *   Not working now. Bruh...
+ */
+
 void rlpcMain::on_search_clicked(){
-    search search_w;
-    search_w.exec();
+
+/*
+ *    search search_w;
+ *    search_w.exec();
+ */
+
+}
+
+void rlpcMain::on_replay_toggled(bool checked){
+    if(checked == true){
+        playlist->setPlaybackMode(playlist->CurrentItemInLoop);
+    }else{
+        playlist->setPlaybackMode(playlist->Sequential);
+    }
 }
