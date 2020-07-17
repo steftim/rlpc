@@ -54,4 +54,4 @@ find_package(Qt5 COMPONENTS Network REQUIRED)
   )
 #endif()
 
-target_link_libraries(rlpc PRIVATE Qt5::Widgets Qt5::Multimedia Qt5::Svg Qt5::Network tag yandexmusic)
+target_link_libraries(rlpc PRIVATE Qt5::Widgets Qt5::Multimedia Qt5::Svg Qt5::Network tag)
