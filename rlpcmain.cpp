@@ -156,8 +156,8 @@ void rlpcMain::changeTheme(QString theme){
 }
 
 void rlpcMain::trackTags(void){
-    if(!player->currentMedia().canonicalUrl().isEmpty()){
-        TagLib::FileRef currentTrack(player->currentMedia().canonicalUrl().toString().remove(0,7).toStdString().c_str());          //ui->trackName->setText(TagLib::String(currentTrack.tag()->title().toCString()));
+    if(!player->currentMedia().request().url().isEmpty()){
+        TagLib::FileRef currentTrack(player->currentMedia().request().url().toString().remove(0,7).toStdString().c_str());          //ui->trackName->setText(TagLib::String(currentTrack.tag()->title().toCString()));
         ui->trackAuthor->setText(currentTrack.tag()->artist().toCString());
         ui->trackName->setText(currentTrack.tag()->title().toCString());
     }
