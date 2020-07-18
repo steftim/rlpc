@@ -35,8 +35,6 @@ private slots:
   void trackTags(void);
   void playlistUpdate(void);
 
-  void on_search_clicked();
-
   void on_replay_toggled(bool checked);
 
   void on_playlistView_clicked(const QModelIndex &index);

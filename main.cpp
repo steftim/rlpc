@@ -1,5 +1,4 @@
 #include "rlpcmain.hpp"
-#include "search.hpp"
 #include <QApplication>
 
 int main(int argc, char *argv[]){

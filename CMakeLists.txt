@@ -47,10 +47,7 @@ find_package(Qt5 COMPONENTS Network REQUIRED)
     rlpcmain.cpp
     rlpcmain.hpp
     rlpcmain.ui
-    search.ui
     yandexmusic.h
-    search.cpp
-    search.hpp
   )
 #endif()
 

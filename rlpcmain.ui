@@ -9,8 +9,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>619</width>
-    <height>452</height>
+    <width>622</width>
+    <height>454</height>
    </rect>
   </property>
   <property name="contextMenuPolicy">
@@ -218,9 +218,9 @@
      <property name="geometry">
       <rect>
        <x>0</x>
-       <y>-9</y>
+       <y>-1</y>
        <width>621</width>
-       <height>31</height>
+       <height>21</height>
       </rect>
      </property>
      <property name="styleSheet">
@@ -317,124 +317,158 @@ background-color: transparent;</string>
      </property>
     </widget>
    </widget>
-   <widget class="QFrame" name="top">
+   <widget class="QTabWidget" name="tabs">
     <property name="geometry">
      <rect>
       <x>0</x>
       <y>0</y>
       <width>621</width>
-      <height>21</height>
+      <height>391</height>
      </rect>
     </property>
-    <property name="frameShape">
-     <enum>QFrame::NoFrame</enum>
+    <property name="tabPosition">
+     <enum>QTabWidget::North</enum>
     </property>
-    <property name="frameShadow">
-     <enum>QFrame::Raised</enum>
+    <property name="currentIndex">
+     <number>0</number>
     </property>
-    <widget class="QPushButton" name="OpenFile">
-     <property name="geometry">
-      <rect>
-       <x>560</x>
-       <y>0</y>
-       <width>61</width>
-       <height>21</height>
-      </rect>
-     </property>
-     <property name="styleSheet">
-      <string notr="true">color: black;</string>
-     </property>
-     <property name="text">
-      <string>add</string>
-     </property>
-     <property name="flat">
-      <bool>true</bool>
-     </property>
+    <property name="elideMode">
+     <enum>Qt::ElideLeft</enum>
+    </property>
+    <property name="tabBarAutoHide">
+     <bool>false</bool>
+    </property>
+    <widget class="QWidget" name="playlist">
+     <attribute name="title">
+      <string>playlist</string>
+     </attribute>
+     <widget class="QFrame" name="top">
+      <property name="geometry">
+       <rect>
+        <x>0</x>
+        <y>0</y>
+        <width>621</width>
+        <height>21</height>
+       </rect>
+      </property>
+      <property name="frameShape">
+       <enum>QFrame::NoFrame</enum>
+      </property>
+      <property name="frameShadow">
+       <enum>QFrame::Raised</enum>
+      </property>
+      <widget class="QPushButton" name="OpenFile">
+       <property name="geometry">
+        <rect>
+         <x>560</x>
+         <y>0</y>
+         <width>61</width>
+         <height>21</height>
+        </rect>
+       </property>
+       <property name="styleSheet">
+        <string notr="true"/>
+       </property>
+       <property name="text">
+        <string>add</string>
+       </property>
+       <property name="flat">
+        <bool>true</bool>
+       </property>
+      </widget>
+     </widget>
+     <widget class="QTableView" name="playlistView">
+      <property name="geometry">
+       <rect>
+        <x>0</x>
+        <y>20</y>
+        <width>611</width>
+        <height>341</height>
+       </rect>
+      </property>
+      <property name="mouseTracking">
+       <bool>false</bool>
+      </property>
+      <property name="styleSheet">
+       <string notr="true">background-color: transparent;</string>
+      </property>
+      <property name="frameShape">
+       <enum>QFrame::NoFrame</enum>
+      </property>
+      <property name="editTriggers">
+       <set>QAbstractItemView::NoEditTriggers</set>
+      </property>
+      <property name="dragEnabled">
+       <bool>false</bool>
+      </property>
+      <property name="iconSize">
+       <size>
+        <width>16</width>
+        <height>16</height>
+       </size>
+      </property>
+      <property name="showGrid">
+       <bool>false</bool>
+      </property>
+      <property name="gridStyle">
+       <enum>Qt::NoPen</enum>
+      </property>
+      <property name="wordWrap">
+       <bool>false</bool>
+      </property>
+      <attribute name="horizontalHeaderVisible">
+       <bool>false</bool>
+      </attribute>
+      <attribute name="verticalHeaderVisible">
+       <bool>false</bool>
+      </attribute>
+     </widget>
     </widget>
-    <widget class="QComboBox" name="theme">
-     <property name="geometry">
-      <rect>
-       <x>0</x>
-       <y>0</y>
-       <width>101</width>
-       <height>21</height>
-      </rect>
-     </property>
-     <property name="currentIndex">
-      <number>-1</number>
-     </property>
-     <property name="maxVisibleItems">
-      <number>2</number>
-     </property>
-     <property name="maxCount">
-      <number>2</number>
-     </property>
-     <property name="frame">
-      <bool>false</bool>
-     </property>
-    </widget>
-    <widget class="QPushButton" name="search">
-     <property name="geometry">
-      <rect>
-       <x>170</x>
-       <y>0</y>
-       <width>61</width>
-       <height>21</height>
-      </rect>
-     </property>
-     <property name="text">
+    <widget class="QWidget" name="search_tab">
+     <attribute name="title">
       <string>search</string>
-     </property>
-     <property name="flat">
-      <bool>true</bool>
-     </property>
+     </attribute>
     </widget>
-   </widget>
-   <widget class="QTableView" name="playlistView">
-    <property name="geometry">
-     <rect>
-      <x>0</x>
-      <y>20</y>
-      <width>621</width>
-      <height>371</height>
-     </rect>
-    </property>
-    <property name="mouseTracking">
-     <bool>false</bool>
-    </property>
-    <property name="styleSheet">
-     <string notr="true">background-color: transparent;</string>
-    </property>
-    <property name="frameShape">
-     <enum>QFrame::NoFrame</enum>
-    </property>
-    <property name="editTriggers">
-     <set>QAbstractItemView::NoEditTriggers</set>
-    </property>
-    <property name="dragEnabled">
-     <bool>false</bool>
-    </property>
-    <property name="iconSize">
-     <size>
-      <width>16</width>
-      <height>16</height>
-     </size>
-    </property>
-    <property name="showGrid">
-     <bool>false</bool>
-    </property>
-    <property name="gridStyle">
-     <enum>Qt::NoPen</enum>
-    </property>
-    <property name="wordWrap">
-     <bool>false</bool>
-    </property>
-    <attribute name="horizontalHeaderVisible">
-     <bool>false</bool>
-    </attribute>
-    <attribute name="verticalHeaderVisible">
-     <bool>false</bool>
-    </attribute>
+    <widget class="QWidget" name="setting_tab">
+     <attribute name="title">
+      <string>settings</string>
+     </attribute>
+     <widget class="QComboBox" name="theme">
+      <property name="geometry">
+       <rect>
+        <x>60</x>
+        <y>10</y>
+        <width>101</width>
+        <height>21</height>
+       </rect>
+      </property>
+      <property name="currentIndex">
+       <number>-1</number>
+      </property>
+      <property name="maxVisibleItems">
+       <number>2</number>
+      </property>
+      <property name="maxCount">
+       <number>2</number>
+      </property>
+      <property name="frame">
+       <bool>false</bool>
+      </property>
+     </widget>
+     <widget class="QLabel" name="theme_L">
+      <property name="geometry">
+       <rect>
+        <x>10</x>
+        <y>10</y>
+        <width>41</width>
+        <height>21</height>
+       </rect>
+      </property>
+      <property name="text">
+       <string>Theme:</string>
+      </property>
+     </widget>
+    </widget>
    </widget>
   </widget>
  </widget>

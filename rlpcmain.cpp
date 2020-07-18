@@ -1,6 +1,5 @@
 #include "rlpcmain.hpp"
 #include "./ui_rlpcmain.h"
-#include "search.hpp"
 
 #include <QFileDialog>
 #include <QMediaPlayer>
@@ -43,7 +42,6 @@ rlpcMain::rlpcMain(QWidget *parent) : QMainWindow(parent), ui(new Ui::rlpcMain){
       connect(playlist, SIGNAL(currentMediaChanged(const QMediaContent)), SLOT(trackTags(void)));
       changeTheme("white");
 
-      extern search search_w;
       ui->replay->setCheckable(true);
 }
 
@@ -137,13 +135,16 @@ void rlpcMain::changeTheme(QString theme){
         ui->duration->setStyleSheet("color: black;");
         ui->theme->setStyleSheet("color: black;");
         ui->replay->setStyleSheet("color: black;");
-        ui->search->setStyleSheet("color: black;");
+        ui->tabs->setStyleSheet("color: black;");
+        ui->theme_L->setStyleSheet("color: black;");
     }else if(theme == "black"){
         StatusChanged(player->state());
         ui->Next->setIcon(QIcon(icon_path + "res/next_black.svg"));
         ui->Previous->setIcon(QIcon(icon_path + "res/prev_black.svg"));
         ui->main->setStyleSheet("background-color: #31363b;");
-        ui->playlistView->setStyleSheet("color: white;");
+        ui->playlistView->setStyleSheet("color: white;\
+                                         selection-background-color: yellow;\
+                                         selection-color: black;");
         ui->trackName->setStyleSheet("color: white;");
         ui->trackAuthor->setStyleSheet("color: white;");
         ui->OpenFile->setStyleSheet("color: white;");
@@ -151,7 +152,8 @@ void rlpcMain::changeTheme(QString theme){
         ui->duration->setStyleSheet("color: white;");
         ui->theme->setStyleSheet("color: white;");
         ui->replay->setStyleSheet("color: white;");
-        ui->search->setStyleSheet("color: white;");
+        ui->tabs->setStyleSheet("color: white;");
+        ui->theme_L->setStyleSheet("color: white;");
     }
 }
 
@@ -171,20 +173,6 @@ void rlpcMain::playlistUpdate(void){
 void rlpcMain::on_playlistView_clicked(const QModelIndex &index){
     playlist->setCurrentIndex(index.row());
     trackTags();
-}
-
-
-/*
- *   Not working now. Bruh...
- */
-
-void rlpcMain::on_search_clicked(){
-
-/*
- *    search search_w;
- *    search_w.exec();
- */
-
 }
 
 void rlpcMain::on_replay_toggled(bool checked){
