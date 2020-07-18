@@ -1,6 +1,14 @@
 # This file is used to ignore files which are generated
 # ----------------------------------------------------------------------------
+# CMake-generated files
+CMakeFiles/*
+cmake_install.cmake
+CMakeCache.txt
 
+# Created binary
+rlpc
+# Generated MOCs
+rlpc_autogen/*
 *~
 *.autosave
 *.a
