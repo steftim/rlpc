@@ -12,6 +12,11 @@
 #include <QMediaMetaData>
 #include <taglib/tag.h>
 #include <taglib/fileref.h>
+extern "C" {
+#include "yandexmusic.h"
+extern tracks* yam_search(char*);
+extern void get_download_url(int, char*, int);
+}
 
 rlpcMain::rlpcMain(QWidget *parent) : QMainWindow(parent), ui(new Ui::rlpcMain){
       ui->setupUi(this);
@@ -19,8 +24,11 @@ rlpcMain::rlpcMain(QWidget *parent) : QMainWindow(parent), ui(new Ui::rlpcMain){
       //data model for player playlist
       playlist_IModel = new QStandardItemModel(this);
       ui->playlistView->setModel(playlist_IModel);
-
       ui->playlistView->horizontalHeader()->setStretchLastSection(true);
+
+      playlistSearch_IModel = new QStandardItemModel(this);
+      ui->PlaylistSearch->setModel(playlistSearch_IModel);
+      ui->PlaylistSearch->horizontalHeader()->setStretchLastSection(true);
 
       //Player elements
       player = new QMediaPlayer(this);
@@ -181,4 +189,23 @@ void rlpcMain::on_replay_toggled(bool checked){
     }else{
         playlist->setPlaybackMode(playlist->Sequential);
     }
+}
+
+void rlpcMain::on_search_butt_clicked(){
+    tracks_struct = yam_search((char*)ui->search_line->text().toStdString().c_str());
+    uint i;
+    for(i = 0; i < tracks_struct->tracks_col; i++){
+        QStandardItem* title = new QStandardItem();
+        QString tmp;
+        tmp += tracks_struct->item[i].title;
+        tmp += "  -  ";
+        tmp += tracks_struct->item[i].artist[0].name;
+        title->setText(tmp);
+        playlistSearch_IModel->setItem(i, 0, title);
+
+    }
+}
+
+void rlpcMain::on_PlaylistSearch_doubleClicked(const QModelIndex &index){
+    get_download_url(tracks_struct->item[index.row()].id, "mp3", 192);
 }

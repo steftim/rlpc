@@ -22,13 +22,9 @@ struct track{
     size_t albums_amount;
 };
 
-struct tracks{
+typedef struct tracks{
     struct track* item;
     size_t tracks_col;
-};
-
-typedef struct tracks tracks;
-
-void yam_search(char*, tracks);
+}tracks;
 
 #endif /* YANDEXMUSIC_H */

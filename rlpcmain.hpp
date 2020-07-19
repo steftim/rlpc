@@ -3,7 +3,7 @@
 #include <QMainWindow>
 #include <QMediaPlayer>
 #include <QStandardItem>
-#include <QNetworkReply>
+#include "yandexmusic.h"
 
 QT_BEGIN_NAMESPACE
 namespace Ui {
@@ -20,6 +20,7 @@ class rlpcMain : public QMainWindow
 public:
   rlpcMain(QWidget *parent = nullptr);
   ~rlpcMain();
+
 
 private slots:
   void on_OpenFile_clicked(void);
@@ -39,6 +40,10 @@ private slots:
 
   void on_playlistView_clicked(const QModelIndex &index);
 
+  void on_search_butt_clicked();
+
+  void on_PlaylistSearch_doubleClicked(const QModelIndex &index);
+
 private:
   Ui::rlpcMain *ui;
 
@@ -50,4 +55,7 @@ private:
   QMediaPlayer* player;
   QMediaPlaylist* playlist;
   QStandardItemModel* playlist_IModel;
+  QStandardItemModel* playlistSearch_IModel;
+  tracks* tracks_struct;
+  void table_fill(tracks*);
 };
