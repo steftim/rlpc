@@ -1,4 +1,4 @@
-# rlpc
+## rlpc
 rlpc music player
 
 # Anarchy reigns here. At your own risk.
@@ -8,15 +8,16 @@ In the plans:
 - track cover
 - cute playlist with covers :3
 
-Compile:
--  git clone https://github.com/steftim/rlpc.git
--  cd rlpc
--  cmake ./ && make
+#Dependencies:
+__Arch:__
+```bash
+sudo pacman -S gstreamer gst-plugins-good qt5-base taglib libcurl-gnutls 
+```
+```bash
+yay -S cjson
+```
 
-Dependencies:
-- gstreamer
-- gstreamer-plugins-good
-- qt5
-- taglib
-- libcurl
-- cJSON
+#Compile:
+```bash
+./build.sh
+```
