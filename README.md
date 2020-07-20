@@ -8,7 +8,7 @@ In the plans:
 - track cover
 - cute playlist with covers :3
 
-#Dependencies:
+# Dependencies:
 __Arch:__
 ```bash
 sudo pacman -S gstreamer gst-plugins-good qt5-base taglib libcurl-gnutls 
@@ -17,7 +17,7 @@ sudo pacman -S gstreamer gst-plugins-good qt5-base taglib libcurl-gnutls
 yay -S cjson
 ```
 
-#Compile:
+# Compile:
 ```bash
 ./build.sh
 ```
