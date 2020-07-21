@@ -11,7 +11,7 @@ In the plans:
 ### Dependencies:
 __Arch:__
 ```bash
-sudo pacman -S gstreamer gst-plugins-good qt5-base taglib libcurl-gnutls 
+sudo pacman -S --needed gstreamer gst-plugins-good qt5-base taglib libcurl-gnutls 
 ```
 ```bash
 yay -S cjson
