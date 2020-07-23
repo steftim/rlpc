@@ -1,22 +1,11 @@
 #include "rlpcmain.hpp"
 #include "./ui_rlpcmain.h"
-
-#include <QFileDialog>
-#include <QMediaPlayer>
-#include <QMediaPlaylist>
-#include <QStandardItem>
-#include <QListWidget>
-#include <QTableView>
-#include <QTime>
-#include <QSvgWidget>
-#include <QMediaMetaData>
-#include <taglib/tag.h>
-#include <taglib/fileref.h>
-extern "C" {
 #include "yandexmusic.h"
-extern tracks* yam_search(char*);
-extern void get_download_url(int, char*, int);
-}
+
+#include <unistd.h>
+#include <sys/types.h>
+#include <pwd.h>
+#include <sys/stat.h>
 
 rlpcMain::rlpcMain(QWidget *parent) : QMainWindow(parent), ui(new Ui::rlpcMain){
       ui->setupUi(this);
@@ -48,9 +37,42 @@ rlpcMain::rlpcMain(QWidget *parent) : QMainWindow(parent), ui(new Ui::rlpcMain){
       //theme changer
       connect(ui->theme, SIGNAL(currentTextChanged(const QString)), SLOT(changeTheme(QString)));
       connect(playlist, SIGNAL(currentMediaChanged(const QMediaContent)), SLOT(trackTags(void)));
-      changeTheme("white");
+
+      chkconf();
 
       ui->replay->setCheckable(true);
+}
+
+void rlpcMain::chkconf(void){
+    QString home;
+
+    if((home = getenv("HOME")) == NULL){
+        home = getpwuid(getuid())->pw_dir;
+    }
+    struct stat info;
+
+    home += "/.config/rlpc";
+
+    if(stat(home.toStdString().c_str(), &info) != 0)
+        printf("cannot access %s\n", home.toStdString().c_str());
+    else if(info.st_mode & S_IFDIR){
+        home += "/config";
+        FILE* config = fopen(home.toStdString().c_str(), "r");
+        char param[10], arg[10];
+        while(fscanf(config, "%[^:]: %[^;\n]", param, arg) != EOF){
+            if(strcmp(param, "theme") == 0){
+                settings.theme = arg;
+                ui->theme->setCurrentIndex(ui->theme->findText(settings.theme));
+                changeTheme(settings.theme);
+            }
+        }
+      }else{
+         mkdir(home.toStdString().c_str(), 0755);
+         home += "/config";
+         FILE* config = fopen(home.toStdString().c_str(), "w");
+         // "theme: white";
+         fprintf(config, "%s", "theme: white");
+        }
 }
 
 rlpcMain::~rlpcMain(){
@@ -114,7 +136,7 @@ void rlpcMain::changeTrackPos(qint64 pos){
 }
 
 void rlpcMain::on_Previous_clicked(void){
-             playlist->setCurrentIndex(playlist->previousIndex());
+    playlist->setCurrentIndex(playlist->previousIndex());
 }
 
 void rlpcMain::on_Next_clicked(void){
@@ -130,38 +152,40 @@ void rlpcMain::StatusChanged(QMediaPlayer::State state){
 }
 
 void rlpcMain::changeTheme(QString theme){
+    settings.theme = theme;
     if(theme == "white"){
         StatusChanged(player->state());
         ui->Next->setIcon(QIcon(icon_path + "res/next_white.svg"));
         ui->Previous->setIcon(QIcon(icon_path + "res/prev_white.svg"));
         ui->main->setStyleSheet("background-color: #eff0f1;");
-        ui->playlistView->setStyleSheet("color: black;");
         ui->trackName->setStyleSheet("color: black;");
         ui->trackAuthor->setStyleSheet("color: black;");
-        ui->OpenFile->setStyleSheet("color: black;");
         ui->time->setStyleSheet("color: black;");
         ui->duration->setStyleSheet("color: black;");
-        ui->theme->setStyleSheet("color: black;");
         ui->replay->setStyleSheet("color: black;");
         ui->tabs->setStyleSheet("color: black;");
-        ui->theme_L->setStyleSheet("color: black;");
+        ui->OpenFile->setStyleSheet("color: black;");
+        ui->search_line->setStyleSheet("color: black;");
+        ui->PlaylistSearch->setStyleSheet("color: black;");
+        ui->search_butt->setStyleSheet("color: black;");
     }else if(theme == "black"){
         StatusChanged(player->state());
         ui->Next->setIcon(QIcon(icon_path + "res/next_black.svg"));
         ui->Previous->setIcon(QIcon(icon_path + "res/prev_black.svg"));
         ui->main->setStyleSheet("background-color: #31363b;");
-        ui->playlistView->setStyleSheet("color: white;\
-                                         selection-background-color: yellow;\
-                                         selection-color: black;");
+        //ui->playlistView->setStyleSheet("color: white;\
+        //                                 selection-background-color: yellow;\
+        //                                 selection-color: black;");
         ui->trackName->setStyleSheet("color: white;");
         ui->trackAuthor->setStyleSheet("color: white;");
-        ui->OpenFile->setStyleSheet("color: white;");
         ui->time->setStyleSheet("color: white;");
         ui->duration->setStyleSheet("color: white;");
-        ui->theme->setStyleSheet("color: white;");
         ui->replay->setStyleSheet("color: white;");
         ui->tabs->setStyleSheet("color: white;");
-        ui->theme_L->setStyleSheet("color: white;");
+        ui->OpenFile->setStyleSheet("color: white;");
+        ui->search_line->setStyleSheet("color: white;");
+        ui->PlaylistSearch->setStyleSheet("color: white;");
+        ui->search_butt->setStyleSheet("color: white;");
     }
 }
 
@@ -207,5 +231,9 @@ void rlpcMain::on_search_butt_clicked(){
 }
 
 void rlpcMain::on_PlaylistSearch_doubleClicked(const QModelIndex &index){
-    get_download_url(tracks_struct->item[index.row()].id, "mp3", 192);
+    //get_download_url(tracks_struct->item[index.row()].id, (char*)"mp3", 192);
+}
+
+void rlpcMain::on_search_line_returnPressed(){
+    on_search_butt_clicked();
 }
