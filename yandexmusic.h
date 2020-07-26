@@ -30,7 +30,7 @@ typedef struct tracks{
 }tracks;
 
 extern tracks* yam_search(char* query);
-extern void get_download_url(int trackId, char* codec, int bitrate);
+extern char* get_download_url(int trackId);
 
 #ifdef __cplusplus
 }

@@ -5,6 +5,9 @@ rlpc music player
 
 In the plans:
 - Yandex music support
+	Now working:
+	- Search
+        - Get download link
 - track cover
 - cute playlist with covers :3
 

@@ -216,8 +216,10 @@ void rlpcMain::on_replay_toggled(bool checked){
 }
 
 void rlpcMain::on_search_butt_clicked(){
+    tracks_struct = NULL;
     tracks_struct = yam_search((char*)ui->search_line->text().toStdString().c_str());
     uint i;
+    if(tracks_struct != NULL){
     for(i = 0; i < tracks_struct->tracks_col; i++){
         QStandardItem* title = new QStandardItem();
         QString tmp;
@@ -228,10 +230,11 @@ void rlpcMain::on_search_butt_clicked(){
         playlistSearch_IModel->setItem(i, 0, title);
 
     }
+    }
 }
 
 void rlpcMain::on_PlaylistSearch_doubleClicked(const QModelIndex &index){
-    //get_download_url(tracks_struct->item[index.row()].id, (char*)"mp3", 192);
+    QString link = get_download_url(tracks_struct->item[index.row()].id);
 }
 
 void rlpcMain::on_search_line_returnPressed(){
