@@ -1,0 +1,10 @@
+[Desktop Entry]
+Version=0.3
+Name=rlpc
+GenericName=Music player
+Comment=Small music player with Yandex.Music support
+TryExec=rlpc
+Exec=rlpc
+Terminal=false
+Icon=rlpc
+Type=Application
