@@ -1,6 +1,6 @@
 #Program author: Ficus (aka @steftim)
 pkgname=rlpc
-pkgver=03
+pkgver=0.3
 pkgrel=1
 pkgdesc="music player"
 arch=('x86_64')
