@@ -1,0 +1,23 @@
+#Program author: steftim
+pkgname=libyandexmusic
+pkgver=0.1
+pkgrel=1
+pkgdesc="Little yandex music library written in C"
+arch=('x86_64')
+url='https://github.com/steftim/rlpc'
+license=('unknown')
+depends=('cjson' 'curl')
+makedepends=()
+source=(libyandexmusic.so)
+sha256sums=('SKIP')
+
+#prepare() {
+#}
+
+#build() {
+#}
+
+package() {
+	mkdir -p "$pkgdir/usr/lib"
+	cp -r "$srcdir/libyandexmusic.so" "$pkgdir/usr/lib/"
+}

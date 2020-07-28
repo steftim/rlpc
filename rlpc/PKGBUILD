@@ -1,0 +1,35 @@
+#Program author: Ficus (aka @steftim)
+pkgname=rlpc
+pkgver=03
+pkgrel=1
+pkgdesc="music player"
+arch=('x86_64')
+url='https://github.com/steftim/rlpc'
+license=('MIT')
+depends=('gstreamer' 'gst-plugins-good' 'qt5-base' 'qt5-multimedia' 'taglib' 'libyandexmusic')
+makedepends=('cmake' 'git')
+source=("git+${url}.git")
+sha256sums=('SKIP')
+
+prepare() {
+cd "$srcdir/$pkgname/"
+sed -i 's+QString icon_path = "";+QString icon_path = "/usr/share/rlpc";+g' rlpcmain.hpp
+}
+
+build() {
+
+	cd $pkgname/
+	cmake ./
+	make -j$(($(nproc)+1))
+	#make -j1
+}
+
+package() {
+	install -dm 755 "$pkgdir/usr/bin/"
+	install -Dm 755 "$srcdir/$pkgname/$pkgname" "$pkgdir/usr/bin/"
+	#Icon
+	install -dm 755 "$pkgdir/usr/share/$pkgname"
+	cp -r "$srcdir/$pkgname/res/" "$pkgdir/usr/share/$pkgname"
+	mkdir -p "$pkgdir/usr/share/applications/"
+        cp -r "$srcdir/$pkgname/rlpc.desktop" "$pkgdir/usr/share/applications/"
+}
