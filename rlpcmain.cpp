@@ -10,7 +10,7 @@
 rlpcMain::rlpcMain(QWidget *parent) : QMainWindow(parent), ui(new Ui::rlpcMain){
       ui->setupUi(this);
 
-      //data model for player playlist
+      /* Data model for player playlist and search playlist */
       playlist_IModel = new QStandardItemModel(this);
       ui->playlistView->setModel(playlist_IModel);
       ui->playlistView->horizontalHeader()->setStretchLastSection(true);
@@ -19,7 +19,10 @@ rlpcMain::rlpcMain(QWidget *parent) : QMainWindow(parent), ui(new Ui::rlpcMain){
       ui->PlaylistSearch->setModel(playlistSearch_IModel);
       ui->PlaylistSearch->horizontalHeader()->setStretchLastSection(true);
 
-      //Player elements
+      /* Player elements:
+       *  - Player
+       *  - Playlist
+       */
       player = new QMediaPlayer(this);
       playlist = new QMediaPlaylist(player);
       player->setPlaylist(playlist);
@@ -28,7 +31,16 @@ rlpcMain::rlpcMain(QWidget *parent) : QMainWindow(parent), ui(new Ui::rlpcMain){
       ui->theme->addItem("white");
       ui->theme->addItem("black");
 
-      //Events
+      /*
+       * Events:
+       * - change timestamp
+       * - change duration if slider moved
+       * - change track if playlist item changed
+       * - change playing state if event
+       * - update playlist if playlist item changed
+       * - change the appearance if the theme is changed in the settings
+       * - update track info if track changed
+       */
       connect(player, SIGNAL(durationChanged(qint64)), SLOT(SetDuration(qint64)));
       connect(ui->timeslider, SIGNAL(sliderMoved(int)), SLOT(setTrackPos(int)));
       connect(player, SIGNAL(positionChanged(qint64)), SLOT(changeTrackPos(qint64)));
@@ -38,6 +50,7 @@ rlpcMain::rlpcMain(QWidget *parent) : QMainWindow(parent), ui(new Ui::rlpcMain){
       connect(ui->theme, SIGNAL(currentTextChanged(const QString)), SLOT(changeTheme(QString)));
       connect(playlist, SIGNAL(currentMediaChanged(const QMediaContent)), SLOT(trackTags(void)));
 
+      // Read config file, if file not exist - create it
       chkconf();
 
       ui->replay->setCheckable(true);
@@ -53,12 +66,18 @@ void rlpcMain::chkconf(void){
 
     home += "/.config/rlpc";
 
+    /*
+     * If the config directory exists,
+     * try to read the config file,
+     * if not, create a file and write the standard config to it
+     */
     if(stat(home.toStdString().c_str(), &info) != 0)
         printf("cannot access %s\n", home.toStdString().c_str());
     else if(info.st_mode & S_IFDIR){
         home += "/config";
         FILE* config = fopen(home.toStdString().c_str(), "r");
         char param[10], arg[10];
+        /* parameter: value */
         while(fscanf(config, "%[^:]: %[^;\n]", param, arg) != EOF){
             if(strcmp(param, "theme") == 0){
                 settings.theme = arg;
@@ -70,7 +89,7 @@ void rlpcMain::chkconf(void){
          mkdir(home.toStdString().c_str(), 0755);
          home += "/config";
          FILE* config = fopen(home.toStdString().c_str(), "w");
-         // "theme: white";
+         /* "theme: white" */
          fprintf(config, "%s", "theme: white");
         }
 }
@@ -78,6 +97,8 @@ void rlpcMain::chkconf(void){
 rlpcMain::~rlpcMain(){
   delete playlist;
   delete player;
+  delete playlist_IModel;
+  delete playlistSearch_IModel;
   delete ui;
 }
 
@@ -94,10 +115,14 @@ void rlpcMain::on_OpenFile_clicked(void){
             playlist->addMedia(QUrl::fromLocalFile(filePath));
         }
       //Enable buttons. If it is enabled when playlist is empty, player will crash.
-      ui->Previous->setEnabled(true);
-      ui->Play->setEnabled(true);
-      ui->Next->setEnabled(true);
+      if(!ui->Play->isEnabled()){enablePlayButt();}
     }
+}
+
+void rlpcMain::enablePlayButt(void){
+    ui->Previous->setEnabled(true);
+    ui->Play->setEnabled(true);
+    ui->Next->setEnabled(true);
 }
 
 void rlpcMain::on_Play_clicked(void){
@@ -168,14 +193,12 @@ void rlpcMain::changeTheme(QString theme){
         ui->search_line->setStyleSheet("color: black;");
         ui->PlaylistSearch->setStyleSheet("color: black;");
         ui->search_butt->setStyleSheet("color: black;");
+        ui->playlistView->setStyleSheet("color: black;");
     }else if(theme == "black"){
         StatusChanged(player->state());
         ui->Next->setIcon(QIcon(icon_path + "res/next_black.svg"));
         ui->Previous->setIcon(QIcon(icon_path + "res/prev_black.svg"));
         ui->main->setStyleSheet("background-color: #31363b;");
-        //ui->playlistView->setStyleSheet("color: white;\
-        //                                 selection-background-color: yellow;\
-        //                                 selection-color: black;");
         ui->trackName->setStyleSheet("color: white;");
         ui->trackAuthor->setStyleSheet("color: white;");
         ui->time->setStyleSheet("color: white;");
@@ -186,14 +209,22 @@ void rlpcMain::changeTheme(QString theme){
         ui->search_line->setStyleSheet("color: white;");
         ui->PlaylistSearch->setStyleSheet("color: white;");
         ui->search_butt->setStyleSheet("color: white;");
+        ui->playlistView->setStyleSheet("color: white;");
     }
 }
 
 void rlpcMain::trackTags(void){
-    if(!player->currentMedia().request().url().isEmpty()){
+    /*
+     * If the current element is a local file, read its tags,
+     * if it's a URL, take data from the tracks_struct structure
+     */
+    if(!player->currentMedia().request().url().isEmpty() && player->currentMedia().request().url().isLocalFile()){
         TagLib::FileRef currentTrack(player->currentMedia().request().url().toString().remove(0,7).toStdString().c_str());          //ui->trackName->setText(TagLib::String(currentTrack.tag()->title().toCString()));
         ui->trackAuthor->setText(currentTrack.tag()->artist().toCString());
         ui->trackName->setText(currentTrack.tag()->title().toCString());
+    }else if(!player->currentMedia().request().url().isEmpty()){
+        ui->trackAuthor->setText(tracks_struct->item[playlist->currentIndex()].artist[0].name);
+        ui->trackName->setText(tracks_struct->item[playlist->currentIndex()].title);
     }
 }
 
@@ -234,9 +265,15 @@ void rlpcMain::on_search_butt_clicked(){
 }
 
 void rlpcMain::on_PlaylistSearch_doubleClicked(const QModelIndex &index){
-    QString link = get_download_url(tracks_struct->item[index.row()].id);
+    QString link = NULL;
+    link = get_download_url(tracks_struct->item[index.row()].id);
+    if(link != NULL)playlist->addMedia(QUrl(link));
+    if(link != NULL)playlist_IModel->appendRow(new QStandardItem(tracks_struct->item[index.row()].title));
+    if(!ui->Play->isEnabled()){enablePlayButt();}
+
 }
 
+/* Pressing the Return button does the same as pressing the Search button */
 void rlpcMain::on_search_line_returnPressed(){
     on_search_butt_clicked();
 }

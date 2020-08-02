@@ -22,8 +22,6 @@ namespace Ui {
 }
 QT_END_NAMESPACE
 
-void createSearchWindow(void);
-
 class rlpcMain : public QMainWindow
 {
   Q_OBJECT
@@ -31,7 +29,6 @@ class rlpcMain : public QMainWindow
 public:
   rlpcMain(QWidget *parent = nullptr);
   ~rlpcMain();
-
 
 private slots:
   void on_OpenFile_clicked(void);
@@ -54,6 +51,7 @@ private slots:
 private:
   Ui::rlpcMain *ui;
 
+  /* change this variable if you want to specify your path to the "res" directory */
   QString icon_path = "";
 
   QString timeToString(qint64);
@@ -68,6 +66,9 @@ private:
   QStandardItemModel* playlist_IModel;
   QStandardItemModel* playlistSearch_IModel;
   tracks* tracks_struct;
+  /* fill in the table after clicking the "Search" button */
   void table_fill(tracks*);
+  /* check config file */
   void chkconf(void);
+  void enablePlayButt(void);
 };
