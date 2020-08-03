@@ -5,7 +5,6 @@ rlpc music player
 
 ### TODO:
 - Yandex music support
-- track cover
 - cute playlist with covers :3
 
 ### Working:
