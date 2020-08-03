@@ -8,6 +8,7 @@ Yandex.music:
 - Login with log:pass
 - Play full tracks
 - Playlists
+
 Other:
 - Settings
 
