@@ -27,7 +27,8 @@ rlpcMain::rlpcMain(QWidget *parent) : QMainWindow(parent), ui(new Ui::rlpcMain){
       playlist = new QMediaPlaylist(player);
       player->setPlaylist(playlist);
       playlist->setCurrentIndex(0);
-      ui->trackImage->setScene(coverscene);
+      ui->trackImage->setScene(coverScene);
+      ui->trackImage->show();
 
       ui->theme->addItem("white");
       ui->theme->addItem("black");
@@ -231,18 +232,19 @@ void rlpcMain::trackTags(void){
         TagLib::ID3v2::FrameList frameList = currentTrack->frameList("APIC");
             if (!frameList.isEmpty()){
                 TagLib::ID3v2::AttachedPictureFrame *coverData = (TagLib::ID3v2::AttachedPictureFrame*)frameList.front();
+
                 QImage cover;
                 cover.loadFromData((const uchar*)coverData->picture().data(), coverData->picture().size());
-
                 QGraphicsPixmapItem* item = new QGraphicsPixmapItem(QPixmap::fromImage(cover));
-                coverscene->addItem(item);
 
-                ui->trackImage->show();
-                ui->trackImage->fitInView(coverscene->sceneRect(), Qt::KeepAspectRatio);
+                coverScene->clear();
+                coverScene->addItem(item);
+                ui->trackImage->fitInView(coverScene->sceneRect(), Qt::KeepAspectRatio);
             }
     }else if(!player->currentMedia().request().url().isEmpty()){
         ui->trackAuthor->setText(tracks_struct->item[playlist->currentIndex()].artist[0].name);
         ui->trackName->setText(tracks_struct->item[playlist->currentIndex()].title);
+        coverScene->clear();
     }
 }
 

@@ -69,7 +69,7 @@ private:
   QMediaPlaylist* playlist;
   QStandardItemModel* playlist_IModel;
   QStandardItemModel* playlistSearch_IModel;
-  QGraphicsScene* coverscene = new QGraphicsScene();
+  QGraphicsScene* coverScene = new QGraphicsScene();
   tracks* tracks_struct;
   /* fill in the table after clicking the "Search" button */
   void table_fill(tracks*);
