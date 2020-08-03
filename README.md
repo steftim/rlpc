@@ -17,6 +17,12 @@ Other:
 - Play local tracks FLAC, AAC and mp3
 
 ### Dependencies:
+- qt5
+- gstreamer
+- taglib
+- libyandexmusic
+
+#### Packages for arch linux
 __Arch:__
 ```bash
 sudo pacman -S --needed gstreamer gst-plugins-good qt5-base taglib libcurl-gnutls json-c 
