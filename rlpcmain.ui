@@ -446,6 +446,12 @@ background-color: transparent;</string>
       <property name="dragEnabled">
        <bool>false</bool>
       </property>
+      <property name="selectionMode">
+       <enum>QAbstractItemView::SingleSelection</enum>
+      </property>
+      <property name="selectionBehavior">
+       <enum>QAbstractItemView::SelectRows</enum>
+      </property>
       <property name="iconSize">
        <size>
         <width>16</width>
@@ -461,10 +467,19 @@ background-color: transparent;</string>
       <property name="wordWrap">
        <bool>false</bool>
       </property>
+      <property name="cornerButtonEnabled">
+       <bool>false</bool>
+      </property>
       <attribute name="horizontalHeaderVisible">
        <bool>false</bool>
       </attribute>
+      <attribute name="horizontalHeaderHighlightSections">
+       <bool>false</bool>
+      </attribute>
       <attribute name="verticalHeaderVisible">
+       <bool>false</bool>
+      </attribute>
+      <attribute name="verticalHeaderHighlightSections">
        <bool>false</bool>
       </attribute>
      </widget>

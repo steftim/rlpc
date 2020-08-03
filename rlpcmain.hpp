@@ -9,6 +9,7 @@
 #include <QStandardItem>
 #include <QListWidget>
 #include <QTableView>
+#include <QVariant>
 #include <QTime>
 #include <QSvgWidget>
 #include <QMediaMetaData>

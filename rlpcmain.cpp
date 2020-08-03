@@ -56,6 +56,7 @@ rlpcMain::rlpcMain(QWidget *parent) : QMainWindow(parent), ui(new Ui::rlpcMain){
       chkconf();
 
       ui->replay->setCheckable(true);
+      ui->playlistView->resizeRowsToContents();
 }
 
 void rlpcMain::chkconf(void){
@@ -111,8 +112,10 @@ void rlpcMain::on_OpenFile_clicked(void){
   if(!files.isEmpty()){
      foreach (QString filePath, files) {
             QList<QStandardItem *> items;
+
             TagLib::MPEG::File track(QString(filePath).toStdString().c_str());
             items.append(new QStandardItem(TagLib::String(track.tag()->title()).toCString()));
+            items.append(new QStandardItem(TagLib::String(track.tag()->artist()).toCString()));
             playlist_IModel->appendRow(items);
             playlist->addMedia(QUrl::fromLocalFile(filePath));
         }
@@ -197,6 +200,22 @@ void rlpcMain::changeTheme(QString theme){
         ui->search_butt->setStyleSheet("color: black;");
         ui->playlistView->setStyleSheet("color: black;");
         ui->theme->setStyleSheet("color: black;");
+/*                                  border:                 none;               \
+                                    color:                  black;              \
+                                    font-weight:            bold;               \
+                                    padding:                5px                 \
+                                  }                                             \
+                                                                                \
+                                  QComboBox::drop-down{                         \
+                                    border:              none;                  \
+                                    background-color:    rgb(87, 96, 134);      \
+                                    color:               black;                 \
+                                    font-weight:         bold;                  \
+                                    padding:             0px;                   \
+                                    margin:              3px;                   \
+                                  }"); */
+        ui->theme_L->setStyleSheet("color: black;");
+        ui->playlistView->setStyleSheet("QTableView::item:hover{background-color: #3daee9;}");
     }else if(theme == "black"){
         StatusChanged(player->state());
         ui->Next->setIcon(QIcon(icon_path + "res/next_black.svg"));
@@ -214,6 +233,7 @@ void rlpcMain::changeTheme(QString theme){
         ui->search_butt->setStyleSheet("color: white;");
         ui->playlistView->setStyleSheet("color: white;");
         ui->theme->setStyleSheet("color: white;");
+        ui->theme_L->setStyleSheet("color: white;");
     }
 }
 
@@ -231,7 +251,7 @@ void rlpcMain::trackTags(void){
 
         TagLib::ID3v2::FrameList frameList = currentTrack->frameList("APIC");
             if (!frameList.isEmpty()){
-                TagLib::ID3v2::AttachedPictureFrame *coverData = (TagLib::ID3v2::AttachedPictureFrame*)frameList.front();
+                TagLib::ID3v2::AttachedPictureFrame *coverData = static_cast<TagLib::ID3v2::AttachedPictureFrame*>(frameList.front());
 
                 QImage cover;
                 cover.loadFromData((const uchar*)coverData->picture().data(), coverData->picture().size());
@@ -241,6 +261,8 @@ void rlpcMain::trackTags(void){
                 coverScene->addItem(item);
                 ui->trackImage->fitInView(coverScene->sceneRect(), Qt::KeepAspectRatio);
             }
+
+
     }else if(!player->currentMedia().request().url().isEmpty()){
         ui->trackAuthor->setText(tracks_struct->item[playlist->currentIndex()].artist[0].name);
         ui->trackName->setText(tracks_struct->item[playlist->currentIndex()].title);
