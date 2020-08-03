@@ -130,7 +130,7 @@
       <string notr="true"/>
      </property>
      <property name="text">
-      <string>11111</string>
+      <string/>
      </property>
     </widget>
     <widget class="QLabel" name="trackAuthor">
@@ -151,7 +151,7 @@
       <string notr="true"/>
      </property>
      <property name="text">
-      <string>11111</string>
+      <string/>
      </property>
     </widget>
     <widget class="QPushButton" name="Next">
@@ -358,7 +358,7 @@ background-color: transparent;</string>
      <rect>
       <x>0</x>
       <y>0</y>
-      <width>631</width>
+      <width>621</width>
       <height>371</height>
      </rect>
     </property>

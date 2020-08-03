@@ -195,6 +195,7 @@ void rlpcMain::changeTheme(QString theme){
         ui->PlaylistSearch->setStyleSheet("color: black;");
         ui->search_butt->setStyleSheet("color: black;");
         ui->playlistView->setStyleSheet("color: black;");
+        ui->theme->setStyleSheet("color: black;");
     }else if(theme == "black"){
         StatusChanged(player->state());
         ui->Next->setIcon(QIcon(icon_path + "res/next_black.svg"));
@@ -211,6 +212,7 @@ void rlpcMain::changeTheme(QString theme){
         ui->PlaylistSearch->setStyleSheet("color: white;");
         ui->search_butt->setStyleSheet("color: white;");
         ui->playlistView->setStyleSheet("color: white;");
+        ui->theme->setStyleSheet("color: white;");
     }
 }
 
@@ -252,10 +254,6 @@ void rlpcMain::playlistUpdate(void){
 void rlpcMain::on_playlistView_clicked(const QModelIndex &index){
     playlist->setCurrentIndex(index.row());
     trackTags();
-    if(player->currentMedia().request().url().isLocalFile()){
-
-        //ui->trackImage->setBackgroundBrush()
-    }
 }
 
 void rlpcMain::on_replay_toggled(bool checked){
