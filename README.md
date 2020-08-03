@@ -1,7 +1,7 @@
-## rlpc
+# rlpc
 rlpc music player
 
-# Anarchy reigns here. At your own risk.
+## Anarchy reigns here. At your own risk.
 
 ### TODO:
 Yandex.music:
