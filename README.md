@@ -1,18 +1,28 @@
-## rlpc
+# rlpc
 rlpc music player
 
-# Anarchy reigns here. At your own risk.
+## Anarchy reigns here. At your own risk.
 
 ### TODO:
-- Yandex music support
-- track cover
-- cute playlist with covers :3
+Yandex.music:
+- Login with log:pass
+- Play full tracks
+- Playlists
+
+Other:
+- Settings
 
 ### Working:
 - Ya.music search and play demo tracks (50/50)
 - Play local tracks FLAC, AAC and mp3
 
 ### Dependencies:
+- qt5
+- gstreamer
+- taglib
+- libyandexmusic
+
+#### Packages for arch linux
 __Arch:__
 ```bash
 sudo pacman -S --needed gstreamer gst-plugins-good qt5-base taglib libcurl-gnutls json-c 
