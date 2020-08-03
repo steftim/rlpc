@@ -4,9 +4,12 @@ rlpc music player
 # Anarchy reigns here. At your own risk.
 
 ### TODO:
-- Yandex music support
-- track cover
-- cute playlist with covers :3
+Yandex.music:
+- Login with log:pass
+- Play full tracks
+- Playlists
+Other:
+- Settings
 
 ### Working:
 - Ya.music search and play demo tracks (50/50)
