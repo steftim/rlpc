@@ -30,9 +30,9 @@
     <property name="geometry">
      <rect>
       <x>0</x>
-      <y>390</y>
+      <y>370</y>
       <width>621</width>
-      <height>61</height>
+      <height>81</height>
      </rect>
     </property>
     <property name="styleSheet">
@@ -51,7 +51,7 @@
      <property name="geometry">
       <rect>
        <x>520</x>
-       <y>20</y>
+       <y>40</y>
        <width>41</width>
        <height>41</height>
       </rect>
@@ -88,7 +88,7 @@
      <property name="geometry">
       <rect>
        <x>470</x>
-       <y>20</y>
+       <y>40</y>
        <width>41</width>
        <height>41</height>
       </rect>
@@ -115,8 +115,8 @@
     <widget class="QLabel" name="trackName">
      <property name="geometry">
       <rect>
-       <x>70</x>
-       <y>20</y>
+       <x>80</x>
+       <y>30</y>
        <width>321</width>
        <height>18</height>
       </rect>
@@ -130,15 +130,15 @@
       <string notr="true"/>
      </property>
      <property name="text">
-      <string/>
+      <string>11111</string>
      </property>
     </widget>
     <widget class="QLabel" name="trackAuthor">
      <property name="geometry">
       <rect>
-       <x>70</x>
-       <y>40</y>
-       <width>281</width>
+       <x>80</x>
+       <y>50</y>
+       <width>201</width>
        <height>18</height>
       </rect>
      </property>
@@ -151,7 +151,7 @@
       <string notr="true"/>
      </property>
      <property name="text">
-      <string/>
+      <string>11111</string>
      </property>
     </widget>
     <widget class="QPushButton" name="Next">
@@ -161,7 +161,7 @@
      <property name="geometry">
       <rect>
        <x>570</x>
-       <y>20</y>
+       <y>40</y>
        <width>41</width>
        <height>41</height>
       </rect>
@@ -192,17 +192,17 @@
     <widget class="QGraphicsView" name="trackImage">
      <property name="geometry">
       <rect>
-       <x>10</x>
+       <x>0</x>
        <y>20</y>
-       <width>41</width>
-       <height>41</height>
+       <width>71</width>
+       <height>61</height>
       </rect>
      </property>
      <property name="frameShape">
       <enum>QFrame::NoFrame</enum>
      </property>
      <property name="frameShadow">
-      <enum>QFrame::Plain</enum>
+      <enum>QFrame::Raised</enum>
      </property>
      <property name="lineWidth">
       <number>0</number>
@@ -213,8 +213,96 @@
      <property name="horizontalScrollBarPolicy">
       <enum>Qt::ScrollBarAlwaysOff</enum>
      </property>
+     <property name="backgroundBrush">
+      <brush brushstyle="NoBrush">
+       <color alpha="255">
+        <red>0</red>
+        <green>0</green>
+        <blue>0</blue>
+       </color>
+      </brush>
+     </property>
+     <property name="foregroundBrush">
+      <brush brushstyle="NoBrush">
+       <color alpha="255">
+        <red>0</red>
+        <green>0</green>
+        <blue>0</blue>
+       </color>
+      </brush>
+     </property>
      <property name="interactive">
       <bool>false</bool>
+     </property>
+    </widget>
+    <widget class="QLabel" name="time">
+     <property name="enabled">
+      <bool>true</bool>
+     </property>
+     <property name="geometry">
+      <rect>
+       <x>290</x>
+       <y>60</y>
+       <width>51</width>
+       <height>21</height>
+      </rect>
+     </property>
+     <property name="font">
+      <font>
+       <pointsize>8</pointsize>
+      </font>
+     </property>
+     <property name="lineWidth">
+      <number>1</number>
+     </property>
+     <property name="text">
+      <string>00:00</string>
+     </property>
+     <property name="margin">
+      <number>2</number>
+     </property>
+    </widget>
+    <widget class="QLabel" name="duration">
+     <property name="geometry">
+      <rect>
+       <x>360</x>
+       <y>60</y>
+       <width>51</width>
+       <height>21</height>
+      </rect>
+     </property>
+     <property name="font">
+      <font>
+       <pointsize>8</pointsize>
+      </font>
+     </property>
+     <property name="layoutDirection">
+      <enum>Qt::RightToLeft</enum>
+     </property>
+     <property name="text">
+      <string>00:00</string>
+     </property>
+     <property name="alignment">
+      <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
+     </property>
+     <property name="margin">
+      <number>2</number>
+     </property>
+    </widget>
+    <widget class="QPushButton" name="replay">
+     <property name="geometry">
+      <rect>
+       <x>430</x>
+       <y>50</y>
+       <width>21</width>
+       <height>21</height>
+      </rect>
+     </property>
+     <property name="text">
+      <string>R</string>
+     </property>
+     <property name="flat">
+      <bool>true</bool>
      </property>
     </widget>
     <widget class="QSlider" name="timeslider">
@@ -264,76 +352,6 @@ background-color: transparent;</string>
       <number>2</number>
      </property>
     </widget>
-    <widget class="QLabel" name="time">
-     <property name="enabled">
-      <bool>true</bool>
-     </property>
-     <property name="geometry">
-      <rect>
-       <x>260</x>
-       <y>40</y>
-       <width>51</width>
-       <height>21</height>
-      </rect>
-     </property>
-     <property name="font">
-      <font>
-       <pointsize>8</pointsize>
-      </font>
-     </property>
-     <property name="lineWidth">
-      <number>1</number>
-     </property>
-     <property name="text">
-      <string/>
-     </property>
-     <property name="margin">
-      <number>2</number>
-     </property>
-    </widget>
-    <widget class="QLabel" name="duration">
-     <property name="geometry">
-      <rect>
-       <x>340</x>
-       <y>40</y>
-       <width>51</width>
-       <height>21</height>
-      </rect>
-     </property>
-     <property name="font">
-      <font>
-       <pointsize>8</pointsize>
-      </font>
-     </property>
-     <property name="layoutDirection">
-      <enum>Qt::RightToLeft</enum>
-     </property>
-     <property name="text">
-      <string/>
-     </property>
-     <property name="alignment">
-      <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
-     </property>
-     <property name="margin">
-      <number>2</number>
-     </property>
-    </widget>
-    <widget class="QPushButton" name="replay">
-     <property name="geometry">
-      <rect>
-       <x>420</x>
-       <y>30</y>
-       <width>21</width>
-       <height>21</height>
-      </rect>
-     </property>
-     <property name="text">
-      <string>R</string>
-     </property>
-     <property name="flat">
-      <bool>true</bool>
-     </property>
-    </widget>
    </widget>
    <widget class="QTabWidget" name="tabs">
     <property name="geometry">
@@ -341,7 +359,7 @@ background-color: transparent;</string>
       <x>0</x>
       <y>0</y>
       <width>631</width>
-      <height>391</height>
+      <height>371</height>
      </rect>
     </property>
     <property name="styleSheet">
@@ -400,7 +418,7 @@ background-color: transparent;</string>
         <string>add</string>
        </property>
        <property name="flat">
-        <bool>false</bool>
+        <bool>true</bool>
        </property>
       </widget>
      </widget>
@@ -410,7 +428,7 @@ background-color: transparent;</string>
         <x>0</x>
         <y>20</y>
         <width>621</width>
-        <height>341</height>
+        <height>321</height>
        </rect>
       </property>
       <property name="mouseTracking">

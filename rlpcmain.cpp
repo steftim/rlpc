@@ -27,6 +27,7 @@ rlpcMain::rlpcMain(QWidget *parent) : QMainWindow(parent), ui(new Ui::rlpcMain){
       playlist = new QMediaPlaylist(player);
       player->setPlaylist(playlist);
       playlist->setCurrentIndex(0);
+      ui->trackImage->setScene(coverscene);
 
       ui->theme->addItem("white");
       ui->theme->addItem("black");
@@ -109,7 +110,7 @@ void rlpcMain::on_OpenFile_clicked(void){
   if(!files.isEmpty()){
      foreach (QString filePath, files) {
             QList<QStandardItem *> items;
-            TagLib::FileRef track(QString(filePath).toStdString().c_str());
+            TagLib::MPEG::File track(QString(filePath).toStdString().c_str());
             items.append(new QStandardItem(TagLib::String(track.tag()->title()).toCString()));
             playlist_IModel->appendRow(items);
             playlist->addMedia(QUrl::fromLocalFile(filePath));
@@ -219,9 +220,24 @@ void rlpcMain::trackTags(void){
      * if it's a URL, take data from the tracks_struct structure
      */
     if(!player->currentMedia().request().url().isEmpty() && player->currentMedia().request().url().isLocalFile()){
-        TagLib::FileRef currentTrack(player->currentMedia().request().url().toString().remove(0,7).toStdString().c_str());          //ui->trackName->setText(TagLib::String(currentTrack.tag()->title().toCString()));
-        ui->trackAuthor->setText(currentTrack.tag()->artist().toCString());
-        ui->trackName->setText(currentTrack.tag()->title().toCString());
+        TagLib::MPEG::File track(player->currentMedia().request().url().toString().remove(0,7).toStdString().c_str());
+        TagLib::ID3v2::Tag* currentTrack = track.ID3v2Tag();
+
+        ui->trackName->setText(currentTrack->title().toCString());
+        ui->trackAuthor->setText(currentTrack->artist().toCString());
+
+        TagLib::ID3v2::FrameList frameList = currentTrack->frameList("APIC");
+            if (!frameList.isEmpty()){
+                TagLib::ID3v2::AttachedPictureFrame *coverData = (TagLib::ID3v2::AttachedPictureFrame*)frameList.front();
+                QImage cover;
+                cover.loadFromData((const uchar*)coverData->picture().data(), coverData->picture().size());
+
+                QGraphicsPixmapItem* item = new QGraphicsPixmapItem(QPixmap::fromImage(cover));
+                coverscene->addItem(item);
+
+                ui->trackImage->show();
+                ui->trackImage->fitInView(coverscene->sceneRect(), Qt::KeepAspectRatio);
+            }
     }else if(!player->currentMedia().request().url().isEmpty()){
         ui->trackAuthor->setText(tracks_struct->item[playlist->currentIndex()].artist[0].name);
         ui->trackName->setText(tracks_struct->item[playlist->currentIndex()].title);
@@ -236,6 +252,10 @@ void rlpcMain::playlistUpdate(void){
 void rlpcMain::on_playlistView_clicked(const QModelIndex &index){
     playlist->setCurrentIndex(index.row());
     trackTags();
+    if(player->currentMedia().request().url().isLocalFile()){
+
+        //ui->trackImage->setBackgroundBrush()
+    }
 }
 
 void rlpcMain::on_replay_toggled(bool checked){

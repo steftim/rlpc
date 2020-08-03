@@ -12,8 +12,12 @@
 #include <QTime>
 #include <QSvgWidget>
 #include <QMediaMetaData>
+#include <QGraphicsScene>
+#include <QGraphicsPixmapItem>
 #include <taglib/tag.h>
-#include <taglib/fileref.h>
+#include <taglib/id3v2tag.h>
+#include <taglib/mpegfile.h>
+#include <taglib/attachedpictureframe.h>
 #include "yandexmusic.h"
 
 QT_BEGIN_NAMESPACE
@@ -65,6 +69,7 @@ private:
   QMediaPlaylist* playlist;
   QStandardItemModel* playlist_IModel;
   QStandardItemModel* playlistSearch_IModel;
+  QGraphicsScene* coverscene = new QGraphicsScene();
   tracks* tracks_struct;
   /* fill in the table after clicking the "Search" button */
   void table_fill(tracks*);
