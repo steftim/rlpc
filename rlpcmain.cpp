@@ -284,30 +284,30 @@ void rlpcMain::on_playlistView_clicked(const QModelIndex &index){
 }
 
 void rlpcMain::on_search_butt_clicked(){
-    tracks_struct = NULL;
     tracks_struct = yam_search((char*)ui->search_line->text().toStdString().c_str());
     uint i;
     if(tracks_struct != NULL){
-    for(i = 0; i < tracks_struct->tracks_col; i++){
-        QStandardItem* title = new QStandardItem();
-        QString tmp;
-        tmp += tracks_struct->item[i].title;
-        tmp += "  -  ";
-        tmp += tracks_struct->item[i].artist[0].name;
-        title->setText(tmp);
-        playlistSearch_IModel->setItem(i, 0, title);
-
-    }
+        for(i = 0; i < tracks_struct->tracks_col; i++){
+            QStandardItem* title = new QStandardItem();
+            QString tmp;
+            tmp += tracks_struct->item[i].title;
+            tmp += "  -  ";
+            tmp += tracks_struct->item[i].artist[0].name;
+            title->setText(tmp);
+            playlistSearch_IModel->setItem(i, 0, title);
+        }
     }
 }
 
 void rlpcMain::on_PlaylistSearch_doubleClicked(const QModelIndex &index){
-    QString link = NULL;
-    link = get_download_url(tracks_struct->item[index.row()].id);
+    char* link = get_download_url(tracks_struct->item[index.row()].id);
     if(link != NULL)playlist->addMedia(QUrl(link));
-    if(link != NULL)playlist_IModel->appendRow(new QStandardItem(tracks_struct->item[index.row()].title));
+    QString tmp;
+    tmp += tracks_struct->item[index.row()].title;
+    tmp += "  -  ";
+    tmp += tracks_struct->item[index.row()].artist[0].name;
+    if(link != NULL)playlist_IModel->appendRow(new QStandardItem(tmp));
     if(!ui->Play->isEnabled()){enablePlayButt();}
-
 }
 
 /* Pressing the Return button does the same as pressing the Search button */
