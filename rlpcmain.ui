@@ -289,22 +289,6 @@
       <number>2</number>
      </property>
     </widget>
-    <widget class="QPushButton" name="replay">
-     <property name="geometry">
-      <rect>
-       <x>430</x>
-       <y>50</y>
-       <width>21</width>
-       <height>21</height>
-      </rect>
-     </property>
-     <property name="text">
-      <string>R</string>
-     </property>
-     <property name="flat">
-      <bool>true</bool>
-     </property>
-    </widget>
     <widget class="QSlider" name="timeslider">
      <property name="geometry">
       <rect>
@@ -350,6 +334,28 @@ background-color: transparent;</string>
      </property>
      <property name="tickInterval">
       <number>2</number>
+     </property>
+    </widget>
+    <widget class="QPushButton" name="playstate">
+     <property name="geometry">
+      <rect>
+       <x>440</x>
+       <y>40</y>
+       <width>21</width>
+       <height>21</height>
+      </rect>
+     </property>
+     <property name="text">
+      <string/>
+     </property>
+     <property name="iconSize">
+      <size>
+       <width>16</width>
+       <height>16</height>
+      </size>
+     </property>
+     <property name="flat">
+      <bool>true</bool>
      </property>
     </widget>
    </widget>

@@ -55,8 +55,10 @@ rlpcMain::rlpcMain(QWidget *parent) : QMainWindow(parent), ui(new Ui::rlpcMain){
       // Read config file, if file not exist - create it
       chkconf();
 
-      ui->replay->setCheckable(true);
       ui->playlistView->resizeRowsToContents();
+      settings.State = 2;
+      ui->playstate->setCheckable(true);
+      chstbtt();
 }
 
 void rlpcMain::chkconf(void){
@@ -184,7 +186,6 @@ void rlpcMain::StatusChanged(QMediaPlayer::State state){
 void rlpcMain::changeTheme(QString theme){
     settings.theme = theme;
     if(theme == "white"){
-        StatusChanged(player->state());
         ui->Next->setIcon(QIcon(icon_path + "res/next_white.svg"));
         ui->Previous->setIcon(QIcon(icon_path + "res/prev_white.svg"));
         ui->main->setStyleSheet("background-color: #eff0f1;");
@@ -192,7 +193,7 @@ void rlpcMain::changeTheme(QString theme){
         ui->trackAuthor->setStyleSheet("color: black;");
         ui->time->setStyleSheet("color: black;");
         ui->duration->setStyleSheet("color: black;");
-        ui->replay->setStyleSheet("color: black;");
+        ui->playstate->setStyleSheet("color: black;");
         ui->tabs->setStyleSheet("color: black;");
         ui->OpenFile->setStyleSheet("color: black;");
         ui->search_line->setStyleSheet("color: black;");
@@ -217,7 +218,7 @@ void rlpcMain::changeTheme(QString theme){
         ui->theme_L->setStyleSheet("color: black;");
         ui->playlistView->setStyleSheet("QTableView::item:hover{background-color: #3daee9;}");
     }else if(theme == "black"){
-        StatusChanged(player->state());
+
         ui->Next->setIcon(QIcon(icon_path + "res/next_black.svg"));
         ui->Previous->setIcon(QIcon(icon_path + "res/prev_black.svg"));
         ui->main->setStyleSheet("background-color: #31363b;");
@@ -225,7 +226,7 @@ void rlpcMain::changeTheme(QString theme){
         ui->trackAuthor->setStyleSheet("color: white;");
         ui->time->setStyleSheet("color: white;");
         ui->duration->setStyleSheet("color: white;");
-        ui->replay->setStyleSheet("color: white;");
+        ui->playstate->setStyleSheet("color: white;");
         ui->tabs->setStyleSheet("color: white;");
         ui->OpenFile->setStyleSheet("color: white;");
         ui->search_line->setStyleSheet("color: white;");
@@ -235,6 +236,8 @@ void rlpcMain::changeTheme(QString theme){
         ui->theme->setStyleSheet("color: white;");
         ui->theme_L->setStyleSheet("color: white;");
     }
+    StatusChanged(player->state());
+    chstbtt();
 }
 
 void rlpcMain::trackTags(void){
@@ -280,14 +283,6 @@ void rlpcMain::on_playlistView_clicked(const QModelIndex &index){
     trackTags();
 }
 
-void rlpcMain::on_replay_toggled(bool checked){
-    if(checked == true){
-        playlist->setPlaybackMode(playlist->CurrentItemInLoop);
-    }else{
-        playlist->setPlaybackMode(playlist->Sequential);
-    }
-}
-
 void rlpcMain::on_search_butt_clicked(){
     tracks_struct = NULL;
     tracks_struct = yam_search((char*)ui->search_line->text().toStdString().c_str());
@@ -318,4 +313,29 @@ void rlpcMain::on_PlaylistSearch_doubleClicked(const QModelIndex &index){
 /* Pressing the Return button does the same as pressing the Search button */
 void rlpcMain::on_search_line_returnPressed(){
     on_search_butt_clicked();
+}
+
+void rlpcMain::chstbtt(void){
+    if(settings.State == REPEAT_ALL){
+        playlist->setPlaybackMode(playlist->Loop);
+        ui->playstate->setIcon(QIcon(icon_path + "res/loop_" + settings.theme + ".svg"));
+        ui->playstate->setChecked(true);
+    }else if(settings.State == REPEAT_ONE){
+        playlist->setPlaybackMode(playlist->CurrentItemInLoop);
+        ui->playstate->setIcon(QIcon(icon_path + "res/currentloop_" + settings.theme + ".svg"));
+        ui->playstate->setChecked(true);
+    }else if(settings.State == ALL_ONCE){
+        playlist->setPlaybackMode(playlist->Sequential);
+        ui->playstate->setIcon(QIcon(icon_path + "res/loop_" + settings.theme + ".svg"));
+        ui->playstate->setChecked(false);
+    }
+}
+
+void rlpcMain::on_playstate_clicked(){
+    if(settings.State == 2){
+        settings.State = 0;
+    }else{
+        settings.State++;
+    }
+    chstbtt();
 }
