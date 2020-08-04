@@ -9,6 +9,7 @@
 #include <QStandardItem>
 #include <QListWidget>
 #include <QTableView>
+#include <QVariant>
 #include <QTime>
 #include <QSvgWidget>
 #include <QMediaMetaData>
@@ -46,11 +47,11 @@ private slots:
   void changeTheme(QString);
   void trackTags(void);
   void playlistUpdate(void);
-  void on_replay_toggled(bool checked);
   void on_playlistView_clicked(const QModelIndex &index);
   void on_search_butt_clicked();
   void on_PlaylistSearch_doubleClicked(const QModelIndex &index);
   void on_search_line_returnPressed();
+  void on_playstate_clicked();
 
 private:
   Ui::rlpcMain *ui;
@@ -60,8 +61,15 @@ private:
 
   QString timeToString(qint64);
 
+  enum Playstate{
+      REPEAT_ALL,
+      REPEAT_ONE,
+      ALL_ONCE,
+  };
+
   struct settings{
       QString theme;
+      uint State;
   }settings;
 
   QString fileName;
@@ -76,4 +84,5 @@ private:
   /* check config file */
   void chkconf(void);
   void enablePlayButt(void);
+  void chstbtt(void);
 };

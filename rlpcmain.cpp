@@ -55,7 +55,10 @@ rlpcMain::rlpcMain(QWidget *parent) : QMainWindow(parent), ui(new Ui::rlpcMain){
       // Read config file, if file not exist - create it
       chkconf();
 
-      ui->replay->setCheckable(true);
+      ui->playlistView->resizeRowsToContents();
+      settings.State = 2;
+      ui->playstate->setCheckable(true);
+      chstbtt();
 }
 
 void rlpcMain::chkconf(void){
@@ -111,8 +114,10 @@ void rlpcMain::on_OpenFile_clicked(void){
   if(!files.isEmpty()){
      foreach (QString filePath, files) {
             QList<QStandardItem *> items;
+
             TagLib::MPEG::File track(QString(filePath).toStdString().c_str());
             items.append(new QStandardItem(TagLib::String(track.tag()->title()).toCString()));
+            items.append(new QStandardItem(TagLib::String(track.tag()->artist()).toCString()));
             playlist_IModel->appendRow(items);
             playlist->addMedia(QUrl::fromLocalFile(filePath));
         }
@@ -181,7 +186,6 @@ void rlpcMain::StatusChanged(QMediaPlayer::State state){
 void rlpcMain::changeTheme(QString theme){
     settings.theme = theme;
     if(theme == "white"){
-        StatusChanged(player->state());
         ui->Next->setIcon(QIcon(icon_path + "res/next_white.svg"));
         ui->Previous->setIcon(QIcon(icon_path + "res/prev_white.svg"));
         ui->main->setStyleSheet("background-color: #eff0f1;");
@@ -189,7 +193,7 @@ void rlpcMain::changeTheme(QString theme){
         ui->trackAuthor->setStyleSheet("color: black;");
         ui->time->setStyleSheet("color: black;");
         ui->duration->setStyleSheet("color: black;");
-        ui->replay->setStyleSheet("color: black;");
+        ui->playstate->setStyleSheet("color: black;");
         ui->tabs->setStyleSheet("color: black;");
         ui->OpenFile->setStyleSheet("color: black;");
         ui->search_line->setStyleSheet("color: black;");
@@ -197,8 +201,24 @@ void rlpcMain::changeTheme(QString theme){
         ui->search_butt->setStyleSheet("color: black;");
         ui->playlistView->setStyleSheet("color: black;");
         ui->theme->setStyleSheet("color: black;");
+/*                                  border:                 none;               \
+                                    color:                  black;              \
+                                    font-weight:            bold;               \
+                                    padding:                5px                 \
+                                  }                                             \
+                                                                                \
+                                  QComboBox::drop-down{                         \
+                                    border:              none;                  \
+                                    background-color:    rgb(87, 96, 134);      \
+                                    color:               black;                 \
+                                    font-weight:         bold;                  \
+                                    padding:             0px;                   \
+                                    margin:              3px;                   \
+                                  }"); */
+        ui->theme_L->setStyleSheet("color: black;");
+        ui->playlistView->setStyleSheet("QTableView::item:hover{background-color: #3daee9;}");
     }else if(theme == "black"){
-        StatusChanged(player->state());
+
         ui->Next->setIcon(QIcon(icon_path + "res/next_black.svg"));
         ui->Previous->setIcon(QIcon(icon_path + "res/prev_black.svg"));
         ui->main->setStyleSheet("background-color: #31363b;");
@@ -206,7 +226,7 @@ void rlpcMain::changeTheme(QString theme){
         ui->trackAuthor->setStyleSheet("color: white;");
         ui->time->setStyleSheet("color: white;");
         ui->duration->setStyleSheet("color: white;");
-        ui->replay->setStyleSheet("color: white;");
+        ui->playstate->setStyleSheet("color: white;");
         ui->tabs->setStyleSheet("color: white;");
         ui->OpenFile->setStyleSheet("color: white;");
         ui->search_line->setStyleSheet("color: white;");
@@ -214,7 +234,10 @@ void rlpcMain::changeTheme(QString theme){
         ui->search_butt->setStyleSheet("color: white;");
         ui->playlistView->setStyleSheet("color: white;");
         ui->theme->setStyleSheet("color: white;");
+        ui->theme_L->setStyleSheet("color: white;");
     }
+    StatusChanged(player->state());
+    chstbtt();
 }
 
 void rlpcMain::trackTags(void){
@@ -231,7 +254,7 @@ void rlpcMain::trackTags(void){
 
         TagLib::ID3v2::FrameList frameList = currentTrack->frameList("APIC");
             if (!frameList.isEmpty()){
-                TagLib::ID3v2::AttachedPictureFrame *coverData = (TagLib::ID3v2::AttachedPictureFrame*)frameList.front();
+                TagLib::ID3v2::AttachedPictureFrame *coverData = static_cast<TagLib::ID3v2::AttachedPictureFrame*>(frameList.front());
 
                 QImage cover;
                 cover.loadFromData((const uchar*)coverData->picture().data(), coverData->picture().size());
@@ -241,6 +264,8 @@ void rlpcMain::trackTags(void){
                 coverScene->addItem(item);
                 ui->trackImage->fitInView(coverScene->sceneRect(), Qt::KeepAspectRatio);
             }
+
+
     }else if(!player->currentMedia().request().url().isEmpty()){
         ui->trackAuthor->setText(tracks_struct->item[playlist->currentIndex()].artist[0].name);
         ui->trackName->setText(tracks_struct->item[playlist->currentIndex()].title);
@@ -256,14 +281,6 @@ void rlpcMain::playlistUpdate(void){
 void rlpcMain::on_playlistView_clicked(const QModelIndex &index){
     playlist->setCurrentIndex(index.row());
     trackTags();
-}
-
-void rlpcMain::on_replay_toggled(bool checked){
-    if(checked == true){
-        playlist->setPlaybackMode(playlist->CurrentItemInLoop);
-    }else{
-        playlist->setPlaybackMode(playlist->Sequential);
-    }
 }
 
 void rlpcMain::on_search_butt_clicked(){
@@ -296,4 +313,29 @@ void rlpcMain::on_PlaylistSearch_doubleClicked(const QModelIndex &index){
 /* Pressing the Return button does the same as pressing the Search button */
 void rlpcMain::on_search_line_returnPressed(){
     on_search_butt_clicked();
+}
+
+void rlpcMain::chstbtt(void){
+    if(settings.State == REPEAT_ALL){
+        playlist->setPlaybackMode(playlist->Loop);
+        ui->playstate->setIcon(QIcon(icon_path + "res/loop_" + settings.theme + ".svg"));
+        ui->playstate->setChecked(true);
+    }else if(settings.State == REPEAT_ONE){
+        playlist->setPlaybackMode(playlist->CurrentItemInLoop);
+        ui->playstate->setIcon(QIcon(icon_path + "res/currentloop_" + settings.theme + ".svg"));
+        ui->playstate->setChecked(true);
+    }else if(settings.State == ALL_ONCE){
+        playlist->setPlaybackMode(playlist->Sequential);
+        ui->playstate->setIcon(QIcon(icon_path + "res/loop_" + settings.theme + ".svg"));
+        ui->playstate->setChecked(false);
+    }
+}
+
+void rlpcMain::on_playstate_clicked(){
+    if(settings.State == 2){
+        settings.State = 0;
+    }else{
+        settings.State++;
+    }
+    chstbtt();
 }
