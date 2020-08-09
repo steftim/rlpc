@@ -216,7 +216,12 @@ void rlpcMain::changeTheme(QString theme){
                                     margin:              3px;                   \
                                   }"); */
         ui->theme_L->setStyleSheet("color: black;");
-        ui->playlistView->setStyleSheet("QTableView::item:hover{background-color: #3daee9;}");
+        ui->playlistView->setStyleSheet("color: black");
+        ui->usrnm_line->setStyleSheet("color: black;");
+        ui->usrnm_label->setStyleSheet("color: black;");
+        ui->pass_line->setStyleSheet("color: black;");
+        ui->pass_label->setStyleSheet("color: black;");
+        ui->login_button->setStyleSheet("color: black;");
     }else if(theme == "black"){
 
         ui->Next->setIcon(QIcon(icon_path + "res/next_black.svg"));
@@ -235,6 +240,11 @@ void rlpcMain::changeTheme(QString theme){
         ui->playlistView->setStyleSheet("color: white;");
         ui->theme->setStyleSheet("color: white;");
         ui->theme_L->setStyleSheet("color: white;");
+        ui->usrnm_line->setStyleSheet("color: white;");
+        ui->usrnm_label->setStyleSheet("color: white;");
+        ui->pass_line->setStyleSheet("color: white;");
+        ui->pass_label->setStyleSheet("color: white;");
+        ui->login_button->setStyleSheet("color: white;");
     }
     StatusChanged(player->state());
     chstbtt();
@@ -284,7 +294,7 @@ void rlpcMain::on_playlistView_clicked(const QModelIndex &index){
 }
 
 void rlpcMain::on_search_butt_clicked(){
-    tracks_struct = yam_search((char*)ui->search_line->text().toStdString().c_str());
+    tracks_struct = yam_search((char*)ui->search_line->text().toStdString().c_str(), userinfo);
     uint i;
     if(tracks_struct != NULL){
         for(i = 0; i < tracks_struct->tracks_col; i++){
@@ -300,7 +310,7 @@ void rlpcMain::on_search_butt_clicked(){
 }
 
 void rlpcMain::on_PlaylistSearch_doubleClicked(const QModelIndex &index){
-    char* link = get_download_url(tracks_struct->item[index.row()].id);
+    char* link = get_download_url(tracks_struct->item[index.row()].id, userinfo);
     if(link != NULL)playlist->addMedia(QUrl(link));
     QString tmp;
     tmp += tracks_struct->item[index.row()].title;
@@ -338,4 +348,9 @@ void rlpcMain::on_playstate_clicked(){
         settings.State++;
     }
     chstbtt();
+}
+
+void rlpcMain::on_login_button_clicked(){
+    userinfo = get_token((char*)"password", (char*)ui->usrnm_line->text().toStdString().c_str(), (char*)ui->pass_line->text().toStdString().c_str());
+    qDebug() << "token: " << userinfo->access_token << "\nuid: " << userinfo->uid << "\nexpires in: " << userinfo->expires_in << "\ntoken type: " << userinfo->token_type;
 }

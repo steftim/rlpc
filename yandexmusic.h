@@ -6,12 +6,12 @@ extern "C"{
 #include <stddef.h>
 
 struct artist{
-    int id;
+    unsigned int id;
     char* name;
 };
 
 struct album{
-    int id;
+    unsigned int id;
     char* name;
 };
 
@@ -19,7 +19,7 @@ struct track{
     char* title;
     struct artist* artist;
     struct album* album;
-    int id;
+    unsigned int id;
     size_t artists_amount;
     size_t albums_amount;
 };
@@ -29,8 +29,16 @@ typedef struct tracks{
     size_t tracks_col;
 }tracks;
 
-extern tracks* yam_search(char* query);
-extern char* get_download_url(int trackId);
+typedef struct userInfo{
+    char* access_token;
+    unsigned int expires_in;
+    char* token_type;
+    unsigned int uid;
+}userInfo;
+
+extern tracks* yam_search(char* query, userInfo* userinfo);
+extern char* get_download_url(unsigned int trackId, userInfo* userinfo);
+userInfo* get_token(char* grant_type, char* username, char* password);
 
 #ifdef __cplusplus
 }

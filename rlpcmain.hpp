@@ -52,6 +52,7 @@ private slots:
   void on_PlaylistSearch_doubleClicked(const QModelIndex &index);
   void on_search_line_returnPressed();
   void on_playstate_clicked();
+  void on_login_button_clicked();
 
 private:
   Ui::rlpcMain *ui;
@@ -85,4 +86,5 @@ private:
   void chkconf(void);
   void enablePlayButt(void);
   void chstbtt(void);
+  userInfo* userinfo;
 };
