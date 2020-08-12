@@ -59,6 +59,8 @@ rlpcMain::rlpcMain(QWidget *parent) : QMainWindow(parent), ui(new Ui::rlpcMain){
       settings.State = 2;
       ui->playstate->setCheckable(true);
       chstbtt();
+
+      userinfo->access_token = NULL;
 }
 
 void rlpcMain::chkconf(void){
@@ -279,7 +281,19 @@ void rlpcMain::trackTags(void){
     }else if(!player->currentMedia().request().url().isEmpty()){
         ui->trackAuthor->setText(tracks_struct->item[playlist->currentIndex()].artist[0].name);
         ui->trackName->setText(tracks_struct->item[playlist->currentIndex()].title);
+
+        QImage coverImg;
+
+        QString url = tracks_struct->item[playlist->currentIndex()].album[0].coverUri;
+        url.replace("%%", "200x200");
+        cover* coverData = get_cover((char*)url.toStdString().c_str());
+
+        coverImg.loadFromData((uchar*)coverData->data, coverData->len + 5);
+        QGraphicsPixmapItem* item = new QGraphicsPixmapItem(QPixmap::fromImage(coverImg));
+
         coverScene->clear();
+        coverScene->addItem(item);
+        ui->trackImage->fitInView(coverScene->sceneRect(), Qt::KeepAspectRatio);
     }
 }
 
@@ -294,17 +308,18 @@ void rlpcMain::on_playlistView_clicked(const QModelIndex &index){
 }
 
 void rlpcMain::on_search_butt_clicked(){
+    playlistSearch_IModel->clear();
     tracks_struct = yam_search((char*)ui->search_line->text().toStdString().c_str(), userinfo);
     uint i;
     if(tracks_struct != NULL){
         for(i = 0; i < tracks_struct->tracks_col; i++){
-            QStandardItem* title = new QStandardItem();
+            QList<QStandardItem *> items;
             QString tmp;
             tmp += tracks_struct->item[i].title;
             tmp += "  -  ";
             tmp += tracks_struct->item[i].artist[0].name;
-            title->setText(tmp);
-            playlistSearch_IModel->setItem(i, 0, title);
+            items.append(new QStandardItem(tmp));
+            playlistSearch_IModel->appendRow(items);
         }
     }
 }
