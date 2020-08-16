@@ -6,6 +6,7 @@
 #include <sys/types.h>
 #include <pwd.h>
 #include <sys/stat.h>
+//#define DEBUG
 
 rlpcMain::rlpcMain(QWidget *parent) : QMainWindow(parent), ui(new Ui::rlpcMain){
       ui->setupUi(this);
@@ -367,5 +368,7 @@ void rlpcMain::on_playstate_clicked(){
 
 void rlpcMain::on_login_button_clicked(){
     userinfo = get_token((char*)"password", (char*)ui->usrnm_line->text().toStdString().c_str(), (char*)ui->pass_line->text().toStdString().c_str());
+    #ifdef DEBUG
     qDebug() << "token: " << userinfo->access_token << "\nuid: " << userinfo->uid << "\nexpires in: " << userinfo->expires_in << "\ntoken type: " << userinfo->token_type;
+    #endif
 }
