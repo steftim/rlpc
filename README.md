@@ -5,15 +5,14 @@ rlpc music player
 
 ### TODO:
 Yandex.music:
-- Login with log:pass
-- Play full tracks
 - Playlists
 
 Other:
 - Settings
 
 ### Working:
-- Ya.music search and play demo tracks (50/50)
+- Ya.music search and play demo tracks (FULL plays with login)
+- Logging in to Ya.Music
 - Play local tracks FLAC, AAC and mp3
 
 ### Dependencies:
