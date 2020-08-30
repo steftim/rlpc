@@ -13,8 +13,10 @@ rlpcMain::rlpcMain(QWidget *parent) : QMainWindow(parent), ui(new Ui::rlpcMain){
 
       /* Data model for player playlist and search playlist */
       playlist_IModel = new QStandardItemModel(this);
+      playlist_IModel->setColumnCount(2);
       ui->playlistView->setModel(playlist_IModel);
       ui->playlistView->horizontalHeader()->setStretchLastSection(true);
+      ui->playlistView->hideColumn(1);
 
       playlistSearch_IModel = new QStandardItemModel(this);
       ui->PlaylistSearch->setModel(playlistSearch_IModel);
@@ -119,8 +121,10 @@ void rlpcMain::on_OpenFile_clicked(void){
             QList<QStandardItem *> items;
 
             TagLib::MPEG::File track(QString(filePath).toStdString().c_str());
-            items.append(new QStandardItem(TagLib::String(track.tag()->title()).toCString()));
-            items.append(new QStandardItem(TagLib::String(track.tag()->artist()).toCString()));
+            QString name = TagLib::String(track.tag()->title()).toCString();
+            name += "   -   ";
+            name += TagLib::String(track.tag()->artist()).toCString();
+            items.append(new QStandardItem(name));
             playlist_IModel->appendRow(items);
             playlist->addMedia(QUrl::fromLocalFile(filePath));
         }
@@ -226,7 +230,6 @@ void rlpcMain::changeTheme(QString theme){
         ui->pass_label->setStyleSheet("color: black;");
         ui->login_button->setStyleSheet("color: black;");
     }else if(theme == "black"){
-
         ui->Next->setIcon(QIcon(icon_path + "res/next_black.svg"));
         ui->Previous->setIcon(QIcon(icon_path + "res/prev_black.svg"));
         ui->main->setStyleSheet("background-color: #31363b;");
@@ -280,7 +283,8 @@ void rlpcMain::trackTags(void){
 
 
     }else if(!player->currentMedia().request().url().isEmpty()){
-        ui->trackAuthor->setText(tracks_struct->item[playlist->currentIndex()].artist[0].name);
+        //ui->trackAuthor->setText(tracks_struct->item[playlist->currentIndex()].artist[0].name);
+        ui->trackAuthor->setText(ui->playlistView->indexAt(QPoint(0,playlist->currentIndex())).data().toString());
         ui->trackName->setText(tracks_struct->item[playlist->currentIndex()].title);
 
         QImage coverImg;
@@ -327,13 +331,20 @@ void rlpcMain::on_search_butt_clicked(){
 
 void rlpcMain::on_PlaylistSearch_doubleClicked(const QModelIndex &index){
     char* link = get_download_url(tracks_struct->item[index.row()].id, userinfo);
-    if(link != NULL)playlist->addMedia(QUrl(link));
-    QString tmp;
-    tmp += tracks_struct->item[index.row()].title;
-    tmp += "  -  ";
-    tmp += tracks_struct->item[index.row()].artist[0].name;
-    if(link != NULL)playlist_IModel->appendRow(new QStandardItem(tmp));
-    if(!ui->Play->isEnabled()){enablePlayButt();}
+    if(link != NULL){
+        playlist->addMedia(QUrl(link));
+        QList<QStandardItem *> items;
+        QString tmp;
+        tmp += tracks_struct->item[index.row()].title;
+        tmp += "  -  ";
+        tmp += tracks_struct->item[index.row()].artist[0].name;
+        //items.append(new QStandardItem(tmp));
+        items.append(new QStandardItem(tracks_struct->item[index.row()].id));
+        playlist_IModel->appendRow(items);
+        if(!ui->Play->isEnabled()){
+            enablePlayButt();
+        }
+    }
 }
 
 /* Pressing the Return button does the same as pressing the Search button */
