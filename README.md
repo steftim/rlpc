@@ -20,6 +20,7 @@ Other:
 - gstreamer
 - taglib
 - libyandexmusic
+- curl
 
 #### Packages for arch linux
 __Arch:__
