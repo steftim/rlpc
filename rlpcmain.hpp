@@ -87,4 +87,6 @@ private:
   void enablePlayButt(void);
   void chstbtt(void);
   userInfo* userinfo;
+  uint playlist_id[20];
+  track* currentTrackInfo;
 };

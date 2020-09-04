@@ -6,7 +6,6 @@ extern "C"{
 
 #include <stdbool.h>
 #include <stddef.h>
-
 struct artist{
     unsigned int id;
     char* name;
@@ -20,17 +19,17 @@ struct album{
     char* coverUri;
 };
 
-struct track{
+typedef struct track{
     char* title;
     struct artist* artist;
     struct album* album;
     unsigned int id;
     size_t artists_amount;
     size_t albums_amount;
-};
+}track;
 
 typedef struct tracks{
-    struct track* item;
+    track* item;
     size_t tracks_col;
 }tracks;
 
@@ -57,9 +56,9 @@ typedef struct cover{
 
 tracks* yam_search(char* query, userInfo* userinfo);
 char* get_download_url(unsigned int trackId, userInfo* userinfo);
+int download_track(const char* name, const char* url);
 userInfo* get_token(char* grant_type, char* username, char* password);
-
-/* Cover */
+track* get_track_info_from_id(unsigned int id, userInfo* userinfo);
 cover* get_cover(char* url);
 
 #ifdef __cplusplus

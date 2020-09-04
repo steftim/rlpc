@@ -63,7 +63,10 @@ rlpcMain::rlpcMain(QWidget *parent) : QMainWindow(parent), ui(new Ui::rlpcMain){
       ui->playstate->setCheckable(true);
       chstbtt();
 
+      userinfo = (userInfo*)calloc(1, sizeof(userInfo));
       userinfo->access_token = NULL;
+
+      //playlist_id = new uint;
 }
 
 void rlpcMain::chkconf(void){
@@ -81,9 +84,14 @@ void rlpcMain::chkconf(void){
      * try to read the config file,
      * if not, create a file and write the standard config to it
      */
-    if(stat(home.toStdString().c_str(), &info) != 0)
-        printf("cannot access %s\n", home.toStdString().c_str());
-    else if(info.st_mode & S_IFDIR){
+    if(stat(home.toStdString().c_str(), &info) != 0){
+        mkdir(home.toStdString().c_str(), 0755);
+        home += "/config";
+        FILE* config = fopen(home.toStdString().c_str(), "w");
+        /* "theme: white" */
+        fprintf(config, "%s", "theme: white");
+        fclose(config);
+    }else if(info.st_mode & S_IFDIR){
         home += "/config";
         FILE* config = fopen(home.toStdString().c_str(), "r");
         char param[10], arg[10];
@@ -95,13 +103,8 @@ void rlpcMain::chkconf(void){
                 changeTheme(settings.theme);
             }
         }
-      }else{
-         mkdir(home.toStdString().c_str(), 0755);
-         home += "/config";
-         FILE* config = fopen(home.toStdString().c_str(), "w");
-         /* "theme: white" */
-         fprintf(config, "%s", "theme: white");
-        }
+        fclose(config);
+    }
 }
 
 rlpcMain::~rlpcMain(){
@@ -283,13 +286,14 @@ void rlpcMain::trackTags(void){
 
 
     }else if(!player->currentMedia().request().url().isEmpty()){
+        track* currentTrack = get_track_info_from_id(playlist_id[playlist->currentIndex()], userinfo);
         //ui->trackAuthor->setText(tracks_struct->item[playlist->currentIndex()].artist[0].name);
-        ui->trackAuthor->setText(ui->playlistView->indexAt(QPoint(0,playlist->currentIndex())).data().toString());
-        ui->trackName->setText(tracks_struct->item[playlist->currentIndex()].title);
+        ui->trackAuthor->setText(currentTrack->artist[0].name);
+        ui->trackName->setText(currentTrack->title);
 
         QImage coverImg;
 
-        QString url = tracks_struct->item[playlist->currentIndex()].album[0].coverUri;
+        QString url = currentTrack->album[0].coverUri;
         url.replace("%%", "200x200");
         cover* coverData = get_cover((char*)url.toStdString().c_str());
 
@@ -322,7 +326,7 @@ void rlpcMain::on_search_butt_clicked(){
             QString tmp;
             tmp += tracks_struct->item[i].title;
             tmp += "  -  ";
-            tmp += tracks_struct->item[i].artist[0].name;
+            tmp += tracks_struct->item[i].artist->name;
             items.append(new QStandardItem(tmp));
             playlistSearch_IModel->appendRow(items);
         }
@@ -338,8 +342,9 @@ void rlpcMain::on_PlaylistSearch_doubleClicked(const QModelIndex &index){
         tmp += tracks_struct->item[index.row()].title;
         tmp += "  -  ";
         tmp += tracks_struct->item[index.row()].artist[0].name;
-        //items.append(new QStandardItem(tmp));
-        items.append(new QStandardItem(tracks_struct->item[index.row()].id));
+        items.append(new QStandardItem(tmp));
+        uint indx = (uint)playlist_IModel->rowCount() + 1;
+        playlist_id[indx - 1] = tracks_struct->item[index.row()].id;
         playlist_IModel->appendRow(items);
         if(!ui->Play->isEnabled()){
             enablePlayButt();
