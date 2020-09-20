@@ -4,8 +4,14 @@
 
 #include <unistd.h>
 #include <sys/types.h>
+#ifdef Q_OS_WIN32
+#include <QTextCodec>
+#include <QStandardPaths>
+#endif
+#ifdef __linux__
 #include <pwd.h>
 #include <sys/stat.h>
+#endif
 //#define DEBUG
 
 rlpcMain::rlpcMain(QWidget *parent) : QMainWindow(parent), ui(new Ui::rlpcMain){
@@ -66,17 +72,16 @@ rlpcMain::rlpcMain(QWidget *parent) : QMainWindow(parent), ui(new Ui::rlpcMain){
       userinfo = (userInfo*)calloc(1, sizeof(userInfo));
       userinfo->access_token = NULL;
 
-      //playlist_id = new uint;
+      playlist_id = new unsigned int;
 }
 
+#ifdef __linux__
 void rlpcMain::chkconf(void){
     QString home;
-
     if((home = getenv("HOME")) == NULL){
         home = getpwuid(getuid())->pw_dir;
     }
     struct stat info;
-
     home += "/.config/rlpc";
 
     /*
@@ -88,7 +93,7 @@ void rlpcMain::chkconf(void){
         mkdir(home.toStdString().c_str(), 0755);
         home += "/config";
         FILE* config = fopen(home.toStdString().c_str(), "w");
-        /* "theme: white" */
+        /* theme: white */
         fprintf(config, "%s", "theme: white");
         fclose(config);
     }else if(info.st_mode & S_IFDIR){
@@ -106,9 +111,46 @@ void rlpcMain::chkconf(void){
         fclose(config);
     }
 }
+#endif
+#ifdef Q_OS_WIN32
+void rlpcMain::chkconf(void){
+    QString home;
+    QStringList AppData = QStandardPaths::standardLocations(QStandardPaths::AppDataLocation);
+    home = AppData.value(1);
+    QString config_path = home;
+    config_path += "/config";
+
+    /*
+     * If the config directory exists,
+     * try to read the config file,
+     * if not, create a file and write the standard config to it
+     */
+    if(GetFileAttributesA(home.toStdString().c_str()) == INVALID_FILE_ATTRIBUTES){
+        mkdir(home.toStdString().c_str());
+        FILE* config = fopen(config_path.toStdString().c_str(), "w");
+        /* theme: white */
+        fprintf(config, "%s", "theme: white");
+        settings.theme = "white";
+        fclose(config);
+    }else if(GetFileAttributesA(config_path.toStdString().c_str()) != INVALID_FILE_ATTRIBUTES){
+        FILE* config = fopen(config_path.toStdString().c_str(), "r");
+        char param[10], arg[10];
+        /* parameter: value */
+        while(fscanf(config, "%[^:]: %[^;\n]", param, arg) != EOF){
+            if(strcmp(param, "theme") == 0){
+                settings.theme = arg;
+            }
+        }
+        fclose(config);
+    }
+    ui->theme->setCurrentIndex(ui->theme->findText(settings.theme));
+    changeTheme(settings.theme);
+}
+#endif
 
 rlpcMain::~rlpcMain(){
   delete playlist;
+  delete playlist_id;
   delete player;
   delete playlist_IModel;
   delete playlistSearch_IModel;
@@ -123,13 +165,14 @@ void rlpcMain::on_OpenFile_clicked(void){
      foreach (QString filePath, files) {
             QList<QStandardItem *> items;
 
-            TagLib::MPEG::File track(QString(filePath).toStdString().c_str());
+            TagLib::MPEG::File track(QFile::encodeName(filePath).constData());
             QString name = TagLib::String(track.tag()->title()).toCString();
             name += "   -   ";
             name += TagLib::String(track.tag()->artist()).toCString();
             items.append(new QStandardItem(name));
             playlist_IModel->appendRow(items);
-            playlist->addMedia(QUrl::fromLocalFile(filePath));
+            qDebug() << "ADD FILE: " << QFile::encodeName(filePath).constData();
+            playlist->addMedia(QUrl::fromLocalFile(QFile::encodeName(filePath).constData()));
         }
       //Enable buttons. If it is enabled when playlist is empty, player will crash.
       if(!ui->Play->isEnabled()){enablePlayButt();}
@@ -143,7 +186,7 @@ void rlpcMain::enablePlayButt(void){
 }
 
 void rlpcMain::on_Play_clicked(void){
-    player->setVolume(50); //delete this line. (feature)
+    player->setVolume(50);
     if(player->state() != QMediaPlayer::PlayingState){
         player->play();
       }else{
@@ -186,6 +229,7 @@ void rlpcMain::on_Next_clicked(void){
 }
 
 void rlpcMain::StatusChanged(QMediaPlayer::State state){
+    /* (icon_path)/res/(action)_(current_theme).svg */
     if(state == QMediaPlayer::PlayingState){
         ui->Play->setIcon(QIcon(icon_path + "res/pause_" + ui->theme->currentText() + ".svg"));
     }else{
@@ -195,6 +239,7 @@ void rlpcMain::StatusChanged(QMediaPlayer::State state){
 
 void rlpcMain::changeTheme(QString theme){
     settings.theme = theme;
+    /* (icon_path)/res/(action)_(current_theme).svg */
     if(theme == "white"){
         ui->Next->setIcon(QIcon(icon_path + "res/next_white.svg"));
         ui->Previous->setIcon(QIcon(icon_path + "res/prev_white.svg"));
@@ -205,27 +250,15 @@ void rlpcMain::changeTheme(QString theme){
         ui->duration->setStyleSheet("color: black;");
         ui->playstate->setStyleSheet("color: black;");
         ui->tabs->setStyleSheet("color: black;");
+        ui->playlist->setStyleSheet("color: black;");
         ui->OpenFile->setStyleSheet("color: black;");
         ui->search_line->setStyleSheet("color: black;");
         ui->PlaylistSearch->setStyleSheet("color: black;");
         ui->search_butt->setStyleSheet("color: black;");
         ui->playlistView->setStyleSheet("color: black;");
         ui->theme->setStyleSheet("color: black;");
-/*                                  border:                 none;               \
-                                    color:                  black;              \
-                                    font-weight:            bold;               \
-                                    padding:                5px                 \
-                                  }                                             \
-                                                                                \
-                                  QComboBox::drop-down{                         \
-                                    border:              none;                  \
-                                    background-color:    rgb(87, 96, 134);      \
-                                    color:               black;                 \
-                                    font-weight:         bold;                  \
-                                    padding:             0px;                   \
-                                    margin:              3px;                   \
-                                  }"); */
         ui->theme_L->setStyleSheet("color: black;");
+        ui->tabs->setStyleSheet("color: black;");
         ui->playlistView->setStyleSheet("color: black");
         ui->usrnm_line->setStyleSheet("color: black;");
         ui->usrnm_label->setStyleSheet("color: black;");
@@ -241,7 +274,9 @@ void rlpcMain::changeTheme(QString theme){
         ui->time->setStyleSheet("color: white;");
         ui->duration->setStyleSheet("color: white;");
         ui->playstate->setStyleSheet("color: white;");
-        ui->tabs->setStyleSheet("color: white;");
+        ui->tabs->setStyleSheet("color: white;                          \
+                                 border-bottom: 0px solid #31363b;      \
+                                 border-top: 0px solid #31363b;");
         ui->OpenFile->setStyleSheet("color: white;");
         ui->search_line->setStyleSheet("color: white;");
         ui->PlaylistSearch->setStyleSheet("color: white;");
@@ -249,6 +284,7 @@ void rlpcMain::changeTheme(QString theme){
         ui->playlistView->setStyleSheet("color: white;");
         ui->theme->setStyleSheet("color: white;");
         ui->theme_L->setStyleSheet("color: white;");
+        ui->tabs->setStyleSheet("color: white;");
         ui->usrnm_line->setStyleSheet("color: white;");
         ui->usrnm_label->setStyleSheet("color: white;");
         ui->pass_line->setStyleSheet("color: white;");
@@ -265,9 +301,22 @@ void rlpcMain::trackTags(void){
      * if it's a URL, take data from the tracks_struct structure
      */
     if(!player->currentMedia().request().url().isEmpty() && player->currentMedia().request().url().isLocalFile()){
-        TagLib::MPEG::File track(player->currentMedia().request().url().toString().remove(0,7).toStdString().c_str());
+#ifdef Q_OS_LINUX
+        int rem = 7;
+#endif
+#ifdef Q_OS_WINDOWS
+        int rem = 8;
+#endif
+        TagLib::MPEG::File track(QFile::encodeName(player->currentMedia().request().url().toString().remove(0,rem)).constData());
+//#ifdef DEBUG
+        qDebug() << player->currentMedia().request().url().toString().remove(0,rem);
+//#endif
+
         TagLib::ID3v2::Tag* currentTrack = track.ID3v2Tag();
 
+        if(currentTrack == NULL){
+            ui->trackName->setText("ERROR");
+          }else{
         ui->trackName->setText(currentTrack->title().toCString());
         ui->trackAuthor->setText(currentTrack->artist().toCString());
 
@@ -284,10 +333,9 @@ void rlpcMain::trackTags(void){
                 ui->trackImage->fitInView(coverScene->sceneRect(), Qt::KeepAspectRatio);
             }
 
-
+          }
     }else if(!player->currentMedia().request().url().isEmpty()){
         track* currentTrack = get_track_info_from_id(playlist_id[playlist->currentIndex()], userinfo);
-        //ui->trackAuthor->setText(tracks_struct->item[playlist->currentIndex()].artist[0].name);
         ui->trackAuthor->setText(currentTrack->artist[0].name);
         ui->trackName->setText(currentTrack->title);
 
@@ -318,8 +366,10 @@ void rlpcMain::on_playlistView_clicked(const QModelIndex &index){
 
 void rlpcMain::on_search_butt_clicked(){
     playlistSearch_IModel->clear();
+    /* If fail returns NULL */
     tracks_struct = yam_search((char*)ui->search_line->text().toStdString().c_str(), userinfo);
     uint i;
+    /* Add all items from tracks_struct to list */
     if(tracks_struct != NULL){
         for(i = 0; i < tracks_struct->tracks_col; i++){
             QList<QStandardItem *> items;
@@ -334,6 +384,7 @@ void rlpcMain::on_search_butt_clicked(){
 }
 
 void rlpcMain::on_PlaylistSearch_doubleClicked(const QModelIndex &index){
+    /* Get track url and add track to playlist, then add track id to playlist_id array. */
     char* link = get_download_url(tracks_struct->item[index.row()].id, userinfo);
     if(link != NULL){
         playlist->addMedia(QUrl(link));
@@ -358,6 +409,15 @@ void rlpcMain::on_search_line_returnPressed(){
 }
 
 void rlpcMain::chstbtt(void){
+    /*
+     *  enum Playstate{
+     *  REPEAT_ALL,         | 0
+     *  REPEAT_ONE,         | 1
+     *  ALL_ONCE,           | 2
+     *  };
+     *
+     */
+
     if(settings.State == REPEAT_ALL){
         playlist->setPlaybackMode(playlist->Loop);
         ui->playstate->setIcon(QIcon(icon_path + "res/loop_" + settings.theme + ".svg"));
@@ -374,6 +434,7 @@ void rlpcMain::chstbtt(void){
 }
 
 void rlpcMain::on_playstate_clicked(){
+    /* Each press of the button changes the state by 1 forward */
     if(settings.State == 2){
         settings.State = 0;
     }else{
@@ -384,6 +445,7 @@ void rlpcMain::on_playstate_clicked(){
 
 void rlpcMain::on_login_button_clicked(){
     userinfo = get_token((char*)"password", (char*)ui->usrnm_line->text().toStdString().c_str(), (char*)ui->pass_line->text().toStdString().c_str());
+    /* struct userInfo structName = get_token(grant_type, username, password); */
     #ifdef DEBUG
     qDebug() << "token: " << userinfo->access_token << "\nuid: " << userinfo->uid << "\nexpires in: " << userinfo->expires_in << "\ntoken type: " << userinfo->token_type;
     #endif
