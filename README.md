@@ -6,6 +6,7 @@ rlpc music player
 ### TODO:
 Yandex.music:
 - Playlists
+- Two-factor auth
 
 Other:
 - Settings
