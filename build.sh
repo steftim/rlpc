@@ -1,5 +1,6 @@
 #!/bin/bash
 
 sudo cp libyandexmusic.so /usr/lib
-cmake . && make
+mkdir build && cd build
+cmake ../ && make
 ./clean.sh
