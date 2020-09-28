@@ -1,0 +1,45 @@
+QMainWindow#rlpcMain{
+	color: white;
+	background-color: #31363b;
+}
+
+QWidget{
+	color: white;
+	background-color: #31363b;
+}
+
+QTabWidget::pane{
+	color: white;
+	background: #31363b;
+}
+
+QTabWidget::tab:hover{
+	color: white;
+	background: #31363b;
+}
+
+QLabel{
+	color: white;
+}
+
+QPushButton{
+	color: white;
+}
+
+QSlider::groove:horizontal {
+    border: 0px;
+    height: 6px;
+    background-color: #404040;
+    margin: 0;
+}
+QSlider::handle:horizontal {
+    background-color: yellow;
+    border: 0;
+    width: 15px;
+    margin: 0;
+    border-radius: 0px;
+}
+
+QSlider::sub-page {
+    background-color: yellow;
+}

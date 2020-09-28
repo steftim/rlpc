@@ -299,20 +299,7 @@
       </rect>
      </property>
      <property name="styleSheet">
-      <string notr="true">QSlider::groove:horizontal {
-    border: 0px;
-    height: 6px;
-    background-color: #404040;
-    margin: 0;
-}
-QSlider::handle:horizontal {
-    background-color: yellow;
-    border: 0;
-    width: 15px;
-    margin: 0;
-    border-radius: 0px;
-}
-background-color: transparent;</string>
+      <string notr="true"/>
      </property>
      <property name="maximum">
       <number>100</number>

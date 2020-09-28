@@ -1,0 +1,47 @@
+QMainWindow#rlpcMain{
+	color: black;
+	background-color: #eff0f1;
+}
+
+QWidget{
+	color: black;
+	background-color: #eff0f1;
+}
+
+QTabWidget::pane{
+	color: black;
+	/* background-color:  */
+	background: #eff0f1;
+}
+
+QTabWidget::tab:hover{
+	color: black;
+	/* background: #33393e; */
+	background: #eff0f1;
+}
+
+QLabel{
+	color: black;
+}
+
+QPushButton:pressed{
+	background-color: white;
+}
+
+QSlider::groove:horizontal {
+    border: 0px;
+    height: 6px;
+    background-color: transparent;
+    margin: 0;
+}
+QSlider::handle:horizontal {
+    background-color: yellow;
+    border: 0;
+    width: 15px;
+    margin: 0;
+    border-radius: 0px;
+}
+
+QSlider::sub-page {
+    background-color: yellow;
+}

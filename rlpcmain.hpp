@@ -58,7 +58,7 @@ private:
   Ui::rlpcMain *ui;
 
   /* change this variable if you want to specify your path to the "res" directory */
-  QString icon_path = "";
+  QString res_path = "";
 
   QString timeToString(qint64);
 
@@ -84,9 +84,12 @@ private:
   void table_fill(tracks*);
   /* check config file */
   void chkconf(void);
+  void stylesheetload(void);
   void enablePlayButt(void);
   void chstbtt(void);
   userInfo* userinfo;
   unsigned int* playlist_id;
   track* currentTrackInfo;
+  QString white_theme;
+  QString black_theme;
 };

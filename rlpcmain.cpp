@@ -61,6 +61,8 @@ rlpcMain::rlpcMain(QWidget *parent) : QMainWindow(parent), ui(new Ui::rlpcMain){
       connect(ui->theme, SIGNAL(currentTextChanged(const QString)), SLOT(changeTheme(QString)));
       connect(playlist, SIGNAL(currentMediaChanged(const QMediaContent)), SLOT(trackTags(void)));
 
+      // Read stylesheet files.
+      stylesheetload();
       // Read config file, if file not exist - create it
       chkconf();
 
@@ -229,70 +231,86 @@ void rlpcMain::on_Next_clicked(void){
 }
 
 void rlpcMain::StatusChanged(QMediaPlayer::State state){
-    /* (icon_path)/res/(action)_(current_theme).svg */
+    /* (res_path)/res/(action)_(current_theme).svg */
     if(state == QMediaPlayer::PlayingState){
-        ui->Play->setIcon(QIcon(icon_path + "res/pause_" + ui->theme->currentText() + ".svg"));
+        ui->Play->setIcon(QIcon(res_path + "res/pause_" + ui->theme->currentText() + ".svg"));
     }else{
-        ui->Play->setIcon(QIcon(icon_path + "res/play_" + ui->theme->currentText() + ".svg"));
+        ui->Play->setIcon(QIcon(res_path + "res/play_" + ui->theme->currentText() + ".svg"));
     }
 }
 
 void rlpcMain::changeTheme(QString theme){
     settings.theme = theme;
-    /* (icon_path)/res/(action)_(current_theme).svg */
+    /* (res_path)/res/(action)_(current_theme).svg */
     if(theme == "white"){
-        ui->Next->setIcon(QIcon(icon_path + "res/next_white.svg"));
-        ui->Previous->setIcon(QIcon(icon_path + "res/prev_white.svg"));
-        ui->main->setStyleSheet("background-color: #eff0f1;");
-        ui->trackName->setStyleSheet("color: black;");
-        ui->trackAuthor->setStyleSheet("color: black;");
-        ui->time->setStyleSheet("color: black;");
-        ui->duration->setStyleSheet("color: black;");
-        ui->playstate->setStyleSheet("color: black;");
-        ui->tabs->setStyleSheet("color: black;");
-        ui->playlist->setStyleSheet("color: black;");
-        ui->OpenFile->setStyleSheet("color: black;");
-        ui->search_line->setStyleSheet("color: black;");
-        ui->PlaylistSearch->setStyleSheet("color: black;");
-        ui->search_butt->setStyleSheet("color: black;");
-        ui->playlistView->setStyleSheet("color: black;");
-        ui->theme->setStyleSheet("color: black;");
-        ui->theme_L->setStyleSheet("color: black;");
-        ui->tabs->setStyleSheet("color: black;");
-        ui->playlistView->setStyleSheet("color: black");
-        ui->usrnm_line->setStyleSheet("color: black;");
-        ui->usrnm_label->setStyleSheet("color: black;");
-        ui->pass_line->setStyleSheet("color: black;");
-        ui->pass_label->setStyleSheet("color: black;");
-        ui->login_button->setStyleSheet("color: black;");
+        setStyleSheet(white_theme);
+        ui->Next->setIcon(QIcon(res_path + "res/next_white.svg"));
+        ui->Previous->setIcon(QIcon(res_path + "res/prev_white.svg"));
+//        ui->main->setStyleSheet("background-color: #eff0f1;");
+//        ui->trackName->setStyleSheet("color: black;");
+//        ui->trackAuthor->setStyleSheet("color: black;");
+//        ui->time->setStyleSheet("color: black;");
+//        ui->duration->setStyleSheet("color: black;");
+//        ui->playstate->setStyleSheet("color: black;");
+//        ui->tabs->setStyleSheet("color: black;");
+//        ui->playlist->setStyleSheet("color: black;");
+//        ui->OpenFile->setStyleSheet("color: black;");
+//        ui->search_line->setStyleSheet("color: black;");
+//        ui->PlaylistSearch->setStyleSheet("color: black;");
+//        ui->search_butt->setStyleSheet("color: black;");
+//        ui->playlistView->setStyleSheet("color: black;");
+//        ui->theme->setStyleSheet("color: black;");
+//        ui->theme_L->setStyleSheet("color: black;");
+//        ui->tabs->setStyleSheet("color: black;");
+//        ui->playlistView->setStyleSheet("color: black");
+//        ui->usrnm_line->setStyleSheet("color: black;");
+//        ui->usrnm_label->setStyleSheet("color: black;");
+//        ui->pass_line->setStyleSheet("color: black;");
+//        ui->pass_label->setStyleSheet("color: black;");
+//        ui->login_button->setStyleSheet("color: black;");
     }else if(theme == "black"){
-        ui->Next->setIcon(QIcon(icon_path + "res/next_black.svg"));
-        ui->Previous->setIcon(QIcon(icon_path + "res/prev_black.svg"));
-        ui->main->setStyleSheet("background-color: #31363b;");
-        ui->trackName->setStyleSheet("color: white;");
-        ui->trackAuthor->setStyleSheet("color: white;");
-        ui->time->setStyleSheet("color: white;");
-        ui->duration->setStyleSheet("color: white;");
-        ui->playstate->setStyleSheet("color: white;");
-        ui->tabs->setStyleSheet("color: white;                          \
-                                 border-bottom: 0px solid #31363b;      \
-                                 border-top: 0px solid #31363b;");
-        ui->OpenFile->setStyleSheet("color: white;");
-        ui->search_line->setStyleSheet("color: white;");
-        ui->PlaylistSearch->setStyleSheet("color: white;");
-        ui->search_butt->setStyleSheet("color: white;");
-        ui->playlistView->setStyleSheet("color: white;");
-        ui->theme->setStyleSheet("color: white;");
-        ui->theme_L->setStyleSheet("color: white;");
-        ui->tabs->setStyleSheet("color: white;");
-        ui->usrnm_line->setStyleSheet("color: white;");
-        ui->usrnm_label->setStyleSheet("color: white;");
-        ui->pass_line->setStyleSheet("color: white;");
-        ui->pass_label->setStyleSheet("color: white;");
-        ui->login_button->setStyleSheet("color: white;");
+        setStyleSheet(black_theme);
+        ui->Next->setIcon(QIcon(res_path + "res/next_black.svg"));
+        ui->Previous->setIcon(QIcon(res_path + "res/prev_black.svg"));
+//        ui->main->setStyleSheet("background-color: #31363b;");
+//        ui->trackName->setStyleSheet("color: white;");
+//        ui->trackAuthor->setStyleSheet("color: white;");
+//        ui->time->setStyleSheet("color: white;");
+//        ui->duration->setStyleSheet("color: white;");
+//        ui->playstate->setStyleSheet("color: white;");
+//        ui->tabs->setStyleSheet("color: white;                          \
+//                                 border-bottom: 0px solid #31363b;      \
+//                                 border-top: 0px solid #31363b;");
+//        ui->OpenFile->setStyleSheet("color: white;");
+//        ui->search_line->setStyleSheet("color: white;");
+//        ui->PlaylistSearch->setStyleSheet("color: white;");
+//        ui->search_butt->setStyleSheet("color: white;");
+//        ui->playlistView->setStyleSheet("color: white;");
+//        ui->theme->setStyleSheet("color: white;");
+//        ui->theme_L->setStyleSheet("color: white;");
+//        ui->tabs->setStyleSheet("color: white;");
+//        ui->usrnm_line->setStyleSheet("color: white;");
+//        ui->usrnm_label->setStyleSheet("color: white;");
+//        ui->pass_line->setStyleSheet("color: white;");
+//        ui->pass_label->setStyleSheet("color: white;");
+//        ui->login_button->setStyleSheet("color: white;");
     }
     StatusChanged(player->state());
     chstbtt();
+}
+
+void rlpcMain::stylesheetload(void){
+    QFile blackstylesheet(res_path + "res/black.qss");
+    QFile whitestylesheet(res_path + "res/white.qss");
+    blackstylesheet.open(QFile::ReadOnly);
+    whitestylesheet.open(QFile::ReadOnly);
+    black_theme = blackstylesheet.readAll();
+    white_theme = whitestylesheet.readAll();
+#ifdef DEBUG
+    qDebug() << "\n\n\n\n" << black_theme << "\n\n\n\n \
+        ============================================================\
+        \n\n\n\n" << white_theme << "\n\n\n\n";
+#endif
 }
 
 void rlpcMain::trackTags(void){
@@ -420,15 +438,15 @@ void rlpcMain::chstbtt(void){
 
     if(settings.State == REPEAT_ALL){
         playlist->setPlaybackMode(playlist->Loop);
-        ui->playstate->setIcon(QIcon(icon_path + "res/loop_" + settings.theme + ".svg"));
+        ui->playstate->setIcon(QIcon(res_path + "res/loop_" + settings.theme + ".svg"));
         ui->playstate->setChecked(true);
     }else if(settings.State == REPEAT_ONE){
         playlist->setPlaybackMode(playlist->CurrentItemInLoop);
-        ui->playstate->setIcon(QIcon(icon_path + "res/currentloop_" + settings.theme + ".svg"));
+        ui->playstate->setIcon(QIcon(res_path + "res/currentloop_" + settings.theme + ".svg"));
         ui->playstate->setChecked(true);
     }else if(settings.State == ALL_ONCE){
         playlist->setPlaybackMode(playlist->Sequential);
-        ui->playstate->setIcon(QIcon(icon_path + "res/loop_" + settings.theme + ".svg"));
+        ui->playstate->setIcon(QIcon(res_path + "res/loop_" + settings.theme + ".svg"));
         ui->playstate->setChecked(false);
     }
 }
