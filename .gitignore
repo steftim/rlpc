@@ -81,3 +81,10 @@ Thumbs.db
 *.exe
 
 *.user
+
+*.user.*
+
+taglib*
+libtag*
+libcurl.*
+
