@@ -15,6 +15,7 @@
 #include <QMediaMetaData>
 #include <QGraphicsScene>
 #include <QGraphicsPixmapItem>
+#include <QMessageBox>
 #include <taglib/tag.h>
 #include <taglib/id3v2tag.h>
 #include <taglib/mpegfile.h>
@@ -53,6 +54,9 @@ private slots:
   void on_search_line_returnPressed();
   void on_playstate_clicked();
   void on_login_button_clicked();
+  void on_usrnm_line_returnPressed();
+  void on_pass_line_returnPressed();
+  void on_SaveSettings_clicked();
 
 private:
   Ui::rlpcMain *ui;
@@ -65,12 +69,13 @@ private:
   enum Playstate{
       REPEAT_ALL,
       REPEAT_ONE,
-      ALL_ONCE,
+      ALL_ONCE
   };
 
   struct settings{
-      QString theme;
-      uint State;
+      QString theme = "white";
+      qint8 State;
+      QString proxy;
   }settings;
 
   QString fileName;
@@ -83,13 +88,18 @@ private:
   /* fill in the table after clicking the "Search" button */
   void table_fill(tracks*);
   /* check config file */
+  FILE* openconf(FILE*);
   void chkconf(void);
   void stylesheetload(void);
   void enablePlayButt(void);
   void chstbtt(void);
+  void connection_error(void);
+  void proxytype(void);
+  void errorbox(QString);
   userInfo* userinfo;
   unsigned int* playlist_id;
   track* currentTrackInfo;
   QString white_theme;
   QString black_theme;
+  QMessageBox ErrorBox;
 };
