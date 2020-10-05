@@ -4,12 +4,12 @@
 
 #include <unistd.h>
 #include <sys/types.h>
+#include <QStandardPaths>
 #if defined(__linux__)
 #include <pwd.h>
 #include <sys/stat.h>
 #elif defined(Q_OS_WIN32)
 #include <QTextCodec>
-#include <QStandardPaths>
 #endif
 //#define DEBUG
 
@@ -41,6 +41,7 @@ rlpcMain::rlpcMain(QWidget *parent) : QMainWindow(parent), ui(new Ui::rlpcMain){
       ui->theme->addItem("white");
       ui->theme->addItem("black");
 
+      ui->ProxyType->addItem("");
       ui->ProxyType->addItem("http");
       ui->ProxyType->addItem("https");
       ui->ProxyType->addItem("socks4");
@@ -82,172 +83,52 @@ rlpcMain::rlpcMain(QWidget *parent) : QMainWindow(parent), ui(new Ui::rlpcMain){
 }
 
 void rlpcMain::chkconf(){
-    QString home;
-    FILE* config = NULL;
-#if defined(__linux__)
-    if((home = getenv("HOME")) == NULL){
-        home = getpwuid(getuid())->pw_dir;
-    }
-    struct stat info;
-    home += "/.config/rlpc";
-
-    /*
-     * If the config directory exists,
-     * try to read the config file,
-     * if not, create a file and write the standard config to it
-     */
-    if(stat(home.toStdString().c_str(), &info) != 0){
-        mkdir(home.toStdString().c_str(), 0755);
-        home += "/config";
-        config = fopen(home.toStdString().c_str(), "w");
-        /* theme: white */
-        fprintf(config, "%s", "");
-        fclose(config);
-    }else if(info.st_mode & S_IFDIR){
-        home += "/config";
-        config = fopen(home.toStdString().c_str(), "r");
-        QString proxy_type, proxy_url;
-        char param[10], arg[10];
-        /* parameter: value */
-        while(fscanf(config, "%[^:]: %[^;\n]", param, arg) != EOF){
-            if(strcmp(param, "theme") == 0){
-                settings.theme = arg;
-                ui->theme->setCurrentIndex(ui->theme->findText(settings.theme));
-                changeTheme(settings.theme);
-            }
-            if(strcmp(param, "proxy_type") == 0){
-                ui->ProxyType->setCurrentIndex(ui->ProxyType->findText(arg));
-            }
-            if(strcmp(param, "proxy_url") == 0){
-                ui->ProxyUrl_Line->setText(arg);
-                proxy_url = arg;
-            }
-        }
-        if(!proxy_type.isEmpty() && !proxy_url.isEmpty()){
-            settings.proxy = proxy_type + "://" + proxy_url;
-        }
-        fclose(config);
-    }
-#elif defined(Q_OS_WIN32)
-    QStringList AppData = QStandardPaths::standardLocations(QStandardPaths::AppDataLocation);
-    home = AppData.value(1);
-    QString config_path = home;
-    config_path += "/config";
-
-    /*
-     * If the config directory exists,
-     * try to read the config file,
-     * if not, create a file and write the standard config to it
-     */
-    if(GetFileAttributesA(home.toStdString().c_str()) == INVALID_FILE_ATTRIBUTES){
-        mkdir(home.toStdString().c_str());
-        config = fopen(config_path.toStdString().c_str(), "w");
-        ui->theme->setCurrentIndex(ui->theme->findText(settings.theme));
-        changeTheme(settings.theme);
-        fclose(config);
-        return;
-    }else if(GetFileAttributesA(config_path.toStdString().c_str()) != INVALID_FILE_ATTRIBUTES){
-        config = fopen(config_path.toStdString().c_str(), "r");
-        QString proxy_type, proxy_url;
-        char param[10], arg[10];
-        /* parameter: value */
-        while(fscanf(config, "%[^:]: %[^;\n]", param, arg) != EOF){
-            if(strcmp(param, "theme") == 0){
-                settings.theme = arg;
-                ui->theme->setCurrentIndex(ui->theme->findText(settings.theme));
-                changeTheme(settings.theme);
-            }
-            if(strcmp(param, "proxy_type") == 0){
-                ui->ProxyType->setCurrentIndex(ui->ProxyType->findText(arg));
-            }
-            if(strcmp(param, "proxy_url") == 0){
-                ui->ProxyUrl_Line->setText(arg);
-                proxy_url = arg;
-            }
-        }
-        if(!proxy_type.isEmpty() && !proxy_url.isEmpty()){
-            settings.proxy = proxy_type + "://" + proxy_url;
-        }
-    }
-}
+    QStringList confread;
+    configpath = QStandardPaths::standardLocations(QStandardPaths::AppConfigLocation);
+#if defined(DEBUG)
+    qDebug() << "config path: " << configpath.value(0) + "/config";
 #endif
-ui->theme->setCurrentIndex(ui->theme->findText(settings.theme));
-changeTheme(settings.theme);
+    QFile config(configpath.value(0) + "/config");
+    if(config.exists()){
+
+        config.open(QIODevice::ReadOnly);
+        while(!config.atEnd()){
+            QString tmp;
+            tmp = config.readLine();
+            tmp.remove(QRegExp("[\\n]"));
+            confread << tmp.split(": ");
+        }
+
+        int i;
+        for(i = 0; i < confread.size(); i += 2){
+            if(confread.at(i) == "theme"){
+                settings.theme = confread.at(i + 1);
+                ui->theme->setCurrentIndex(ui->theme->findText(settings.theme));
+                changeTheme(settings.theme);
+#if defined(DEBUG)
+                qDebug() << "theme: " << settings.theme;
+#endif
+            }
+            if(confread.at(i) == "proxy_type"){
+                settings.proxy_type = confread.at(i + 1);
+                ui->ProxyType->setCurrentIndex(ui->ProxyType->findText(settings.proxy_type));
+#if defined(DEBUG)
+                qDebug() << "proxy_type: " << settings.proxy_type;
+#endif
+            }
+            if(confread.at(i) == "proxy_url"){
+                settings.proxy = confread.at(i + 1);
+                ui->ProxyUrl_Line->setText(settings.proxy);
+#if defined(DEBUG)
+                qDebug() << "proxy_url: " << settings.proxy;
+#endif
+            }
+        }
+        config.close();
+
+    }
+
 }
-
-
-//#ifdef __linux__
-//void rlpcMain::chkconf(void){
-//    QString home;
-//    if((home = getenv("HOME")) == NULL){
-//        home = getpwuid(getuid())->pw_dir;
-//    }
-//    struct stat info;
-//    home += "/.config/rlpc";
-
-//    /*
-//     * If the config directory exists,
-//     * try to read the config file,
-//     * if not, create a file and write the standard config to it
-//     */
-//    if(stat(home.toStdString().c_str(), &info) != 0){
-//        mkdir(home.toStdString().c_str(), 0755);
-//        home += "/config";
-//        FILE* config = fopen(home.toStdString().c_str(), "w");
-//        /* theme: white */
-//        fprintf(config, "%s", "theme: white");
-//        fclose(config);
-//    }else if(info.st_mode & S_IFDIR){
-//        home += "/config";
-//        FILE* config = fopen(home.toStdString().c_str(), "r");
-//        char param[10], arg[10];
-//        /* parameter: value */
-//        while(fscanf(config, "%[^:]: %[^;\n]", param, arg) != EOF){
-//            if(strcmp(param, "theme") == 0){
-//                settings.theme = arg;
-//                ui->theme->setCurrentIndex(ui->theme->findText(settings.theme));
-//                changeTheme(settings.theme);
-//            }
-//        }
-//        fclose(config);
-//    }
-//}
-//#endif
-//#ifdef Q_OS_WIN32
-//void rlpcMain::chkconf(void){
-//    QString home;
-//    QStringList AppData = QStandardPaths::standardLocations(QStandardPaths::AppDataLocation);
-//    home = AppData.value(1);
-//    QString config_path = home;
-//    config_path += "/config";
-
-//    /*
-//     * If the config directory exists,
-//     * try to read the config file,
-//     * if not, create a file and write the standard config to it
-//     */
-//    if(GetFileAttributesA(home.toStdString().c_str()) == INVALID_FILE_ATTRIBUTES){
-//        mkdir(home.toStdString().c_str());
-//        FILE* config = fopen(config_path.toStdString().c_str(), "w");
-//        /* theme: white */
-//        fprintf(config, "%s", "theme: white");
-//        settings.theme = "white";
-//        fclose(config);
-//    }else if(GetFileAttributesA(config_path.toStdString().c_str()) != INVALID_FILE_ATTRIBUTES){
-//        FILE* config = fopen(config_path.toStdString().c_str(), "r");
-//        char param[10], arg[10];
-//        /* parameter: value */
-//        while(fscanf(config, "%[^:]: %[^;\n]", param, arg) != EOF){
-//            if(strcmp(param, "theme") == 0){
-//                settings.theme = arg;
-//            }
-//        }
-//        fclose(config);
-//    }
-//    ui->theme->setCurrentIndex(ui->theme->findText(settings.theme));
-//    changeTheme(settings.theme);
-//}
-//#endif
 
 rlpcMain::~rlpcMain(){
   delete playlist;
@@ -340,29 +221,44 @@ void rlpcMain::StatusChanged(QMediaPlayer::State state){
 
 void rlpcMain::changeTheme(QString theme){
     settings.theme = theme;
-    if(settings.theme == "white"){
-        setStyleSheet(white_theme);
-        ui->Next->setIcon(QIcon(res_path + "res/next_white.svg"));
-        ui->Previous->setIcon(QIcon(res_path + "res/prev_white.svg"));
-    }else if(settings.theme == "black"){
+    if(settings.theme == "black"){
         setStyleSheet(black_theme);
-        ui->Next->setIcon(QIcon(res_path + "res/next_black.svg"));
-        ui->Previous->setIcon(QIcon(res_path + "res/prev_black.svg"));
+    }else{
+        setStyleSheet(white_theme);
     }
+
+    ui->Next->setIcon(QIcon(res_path + "res/next_" + ui->theme->currentText() + ".svg"));
+    ui->Previous->setIcon(QIcon(res_path + "res/prev_" + ui->theme->currentText() + ".svg"));
+    if(player->state() == QMediaPlayer::PlayingState){
+        ui->Play->setIcon(QIcon(res_path + "res/pause_" + ui->theme->currentText() + ".svg"));
+    }else{
+        ui->Play->setIcon(QIcon(res_path + "res/play_" + ui->theme->currentText() + ".svg"));
+    }
+
+    chstbtt();
+
 }
 
 void rlpcMain::stylesheetload(void){
+
     QFile blackstylesheet(res_path + "res/black.qss");
     QFile whitestylesheet(res_path + "res/white.qss");
+
     blackstylesheet.open(QFile::ReadOnly);
     whitestylesheet.open(QFile::ReadOnly);
+
     black_theme = blackstylesheet.readAll();
     white_theme = whitestylesheet.readAll();
+
+    blackstylesheet.close();
+    blackstylesheet.close();
+
 #ifdef DEBUG
     qDebug() << "\n\n\n\n" << black_theme << "\n\n\n\n \
         ============================================================\
         \n\n\n\n" << white_theme << "\n\n\n\n";
 #endif
+
 }
 
 void rlpcMain::trackTags(void){
@@ -406,7 +302,7 @@ void rlpcMain::trackTags(void){
           }
     }else if(!player->currentMedia().request().url().isEmpty()){
         coverScene->clear();
-        track* currentTrack = get_track_info_from_id(playlist_id[playlist->currentIndex()], userinfo, (char*)settings.proxy.toStdString().c_str());
+        track* currentTrack = get_track_info_from_id(playlist_id[playlist->currentIndex()], userinfo, (char*)settings.proxy.toStdString().c_str(), (char*)settings.proxy_type.toStdString().c_str());
         if(currentTrack == NULL){
             return;
         }
@@ -417,7 +313,7 @@ void rlpcMain::trackTags(void){
 
         QString url = currentTrack->album[0].coverUri;
         url.replace("%%", "200x200");
-        cover* coverData = get_cover((char*)url.toStdString().c_str(), (char*)settings.proxy.toStdString().c_str());
+        cover* coverData = get_cover((char*)url.toStdString().c_str(), (char*)settings.proxy.toStdString().c_str(), (char*)settings.proxy_type.toStdString().c_str());
 
         coverImg.loadFromData((uchar*)coverData->data, coverData->len + 5);
         QGraphicsPixmapItem* item = new QGraphicsPixmapItem(QPixmap::fromImage(coverImg));
@@ -440,7 +336,7 @@ void rlpcMain::on_playlistView_clicked(const QModelIndex &index){
 void rlpcMain::on_search_butt_clicked(){
     playlistSearch_IModel->clear();
     /* If fail returns NULL */
-    tracks_struct = yam_search((char*)ui->search_line->text().toStdString().c_str(), userinfo, (char*)settings.proxy.toStdString().c_str());
+    tracks_struct = yam_search((char*)ui->search_line->text().toStdString().c_str(), userinfo, (char*)settings.proxy.toStdString().c_str(), (char*)settings.proxy_type.toStdString().c_str());
     if(tracks_struct == NULL){
         errorbox("Yandex music is not available, please check the connection.");
         return;
@@ -454,7 +350,7 @@ void rlpcMain::on_search_butt_clicked(){
             tmp += tracks_struct->item[i].title;
             tmp += "  -  ";
             tmp += tracks_struct->item[i].artist->name;
-            items.append(new QStandardItem(tmp));
+             items.append(new QStandardItem(tmp));
             playlistSearch_IModel->appendRow(items);
         }
     }
@@ -462,7 +358,7 @@ void rlpcMain::on_search_butt_clicked(){
 
 void rlpcMain::on_PlaylistSearch_doubleClicked(const QModelIndex &index){
     /* Get track url and add track to playlist, then add track id to playlist_id array. */
-    char* link = get_download_url(tracks_struct->item[index.row()].id, userinfo, (char*)settings.proxy.toStdString().c_str());
+    char* link = get_download_url(tracks_struct->item[index.row()].id, userinfo, (char*)settings.proxy.toStdString().c_str(), (char*)settings.proxy_type.toStdString().c_str());
     if(link != NULL){
         playlist->addMedia(QUrl(link));
         QList<QStandardItem *> items;
@@ -524,7 +420,7 @@ void rlpcMain::on_playstate_clicked(){
 }
 
 void rlpcMain::on_login_button_clicked(){
-    userinfo = get_token((char*)"password", (char*)ui->usrnm_line->text().toStdString().c_str(), (char*)ui->pass_line->text().toStdString().c_str(), (char*)settings.proxy.toStdString().c_str());
+    userinfo = get_token((char*)"password", (char*)ui->usrnm_line->text().toStdString().c_str(), (char*)ui->pass_line->text().toStdString().c_str(), (char*)settings.proxy.toStdString().c_str(), (char*)settings.proxy_type.toStdString().c_str());
     if(userinfo == NULL){
         errorbox("Yandex music is not available, please check the connection.");
         return;
@@ -550,69 +446,27 @@ void rlpcMain::errorbox(QString Text){
 
 }
 
-//    if(!ui->ProxyUrl_Line->text().isEmpty()){
-//        settings.proxy.type = (ui->ProxyType->currentIndex() - 1);
-//        settings.proxy.url = (char*)ui->ProxyUrl_Line->text().toStdString().c_str();
-//    }else{
-//        errorbox("Please enter proxy address.");
-//    }
-
 void rlpcMain::on_SaveSettings_clicked(){
     changeTheme(ui->theme->currentText());
     StatusChanged(player->state());
-    chstbtt();
     if(!ui->ProxyUrl_Line->text().isEmpty()){
-        settings.proxy = ui->ProxyType->currentText() + "://" + ui->ProxyUrl_Line->text();
+        settings.proxy_type = ui->ProxyType->currentText();
+        settings.proxy = ui->ProxyUrl_Line->text();
     }
 
-    QString home;
-    FILE* config = NULL;
-#if defined(__linux__)
-    if((home = getenv("HOME")) == NULL){
-        home = getpwuid(getuid())->pw_dir;
+    if(!QDir().exists(configpath.value(0))){
+        QDir().mkdir(configpath.value(0));
     }
-    struct stat info;
-    home += "/.config/rlpc";
 
-    /*
-     * If the config directory exists,
-     * try to read the config file,
-     * if not, create a file and write the standard config to it
-     */
-    if(stat(home.toStdString().c_str(), &info) != 0){
-        mkdir(home.toStdString().c_str(), 0755);
-    }
-    home += "/config";
-    config = fopen(home.toStdString().c_str(), "w");
-    fprintf(config,
-            "%s%s%s%s%s%s",
-            "theme: ",          settings.theme.toStdString().c_str(),
-            "\nproxy_type: ",   ui->ProxyType->currentText().toStdString().c_str(),
-            "\nproxy_url: ",    ui->ProxyUrl_Line->text().toStdString().c_str()
-            );
-    fclose(config);
-#elif defined(Q_OS_WIN32)
-    QStringList AppData = QStandardPaths::standardLocations(QStandardPaths::AppDataLocation);
-    home = AppData.value(1);
-    QString config_path = home;
-    config_path += "/config";
+    QFile config(configpath.value(0) + "/config");
+    config.open(QIODevice::WriteOnly);
 
-    /*
-     * If the config directory exists,
-     * try to read the config file,
-     * if not, create a file and write the standard config to it
-     */
-    if(GetFileAttributesA(home.toStdString().c_str()) == INVALID_FILE_ATTRIBUTES){
-        mkdir(home.toStdString().c_str());
-    }else if(GetFileAttributesA(config_path.toStdString().c_str()) != INVALID_FILE_ATTRIBUTES){
-        config = fopen(config_path.toStdString().c_str(), "w");
-        fprintf(config,
-                "%s%s%s%s%s%s",
-                "theme: ",          settings.theme.toStdString().c_str(),
-                "\nproxy_type: ",   ui->ProxyType->currentText().toStdString().c_str(),
-                "\nproxy_url: ",    ui->ProxyUrl_Line->text().toStdString().c_str()
-                );
-    }
-}
-#endif
+    QTextStream confs(&config);
+
+    confs << "theme: " << settings.theme.toStdString().c_str() << "\n";
+    confs << "proxy_type: " << ui->ProxyType->currentText().toStdString().c_str() << "\n";
+    confs << "proxy_url: " << ui->ProxyUrl_Line->text().toStdString().c_str() << "\n";
+
+    config.close();
+
 }

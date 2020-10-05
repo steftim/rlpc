@@ -76,6 +76,7 @@ private:
       QString theme = "white";
       qint8 State;
       QString proxy;
+      QString proxy_type;
   }settings;
 
   QString fileName;
@@ -102,4 +103,5 @@ private:
   QString white_theme;
   QString black_theme;
   QMessageBox ErrorBox;
+  QStringList configpath;
 };
