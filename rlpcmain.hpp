@@ -91,6 +91,7 @@ private:
   /* check config file */
   FILE* openconf(FILE*);
   void chkconf(void);
+  void addToPlaylist(const QList<QUrl>);
   void stylesheetload(void);
   void enablePlayButt(void);
   void chstbtt(void);

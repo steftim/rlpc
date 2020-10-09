@@ -140,24 +140,34 @@ rlpcMain::~rlpcMain(){
 }
 
 void rlpcMain::on_OpenFile_clicked(void){
-  QStringList files = QFileDialog::getOpenFileNames(this,
-      tr("Open File"), "", tr("Audio Files (*.mp3 *.flac *.m4a)"));
-  //If file path not empty, add file to playlist.
-  if(!files.isEmpty()){
-     foreach (QString filePath, files) {
+    QList<QUrl> files = QFileDialog::getOpenFileUrls(this,
+                         tr("Open File"), QStandardPaths::standardLocations(QStandardPaths::MoviesLocation).value(0, QDir::homePath()), tr("Audio Files (*.mp3 *.flac *.m4a)"));
+    //If file path not empty, add file to playlist.
+    if(!files.isEmpty()){
+        foreach (QUrl url, files) {
             QList<QStandardItem *> items;
+            QString tmp, name;
 
-            TagLib::MPEG::File track(QFile::encodeName(filePath).constData());
-            QString name = TagLib::String(track.tag()->title()).toCString();
-            name += "   -   ";
-            name += TagLib::String(track.tag()->artist()).toCString();
+            TagLib::MPEG::File track(url.path().toStdString().c_str());
+            tmp = TagLib::String(track.tag()->title()).toCString();
+            if(!tmp.isEmpty()){
+                name += tmp;
+            }else{
+                name += "Unknown Title";
+            }
+            tmp = TagLib::String(track.tag()->artist()).toCString();
+            name += "  -  ";
+            if(!tmp.isEmpty()){
+                name += tmp;
+            }else{
+                name += "Unknown Author";
+            }
             items.append(new QStandardItem(name));
             playlist_IModel->appendRow(items);
-            qDebug() << "ADD FILE: " << QFile::encodeName(filePath).constData();
-            playlist->addMedia(QUrl::fromLocalFile(QFile::encodeName(filePath).constData()));
+            playlist->addMedia(url);
         }
-      //Enable buttons. If it is enabled when playlist is empty, player will crash.
-      if(!ui->Play->isEnabled()){enablePlayButt();}
+        //Enable buttons. If it is enabled when playlist is empty, player will crash.
+        if(!ui->Play->isEnabled()){enablePlayButt();}
     }
 }
 
@@ -273,7 +283,7 @@ void rlpcMain::trackTags(void){
 #elif defined(Q_OS_WINDOWS)
         int rem = 8;
 #endif
-        TagLib::MPEG::File track(QFile::encodeName(player->currentMedia().request().url().toString().remove(0,rem)).constData());
+        TagLib::MPEG::File track(player->currentMedia().request().url().path().toStdString().c_str());
 #ifdef DEBUG
         qDebug() << player->currentMedia().request().url().toString().remove(0,rem);
 #endif
@@ -364,8 +374,10 @@ void rlpcMain::on_PlaylistSearch_doubleClicked(const QModelIndex &index){
         QList<QStandardItem *> items;
         QString tmp;
         tmp += tracks_struct->item[index.row()].title;
-        tmp += "  -  ";
-        tmp += tracks_struct->item[index.row()].artist[0].name;
+        if(tracks_struct->item[index.row()].artist[0].name != NULL){
+            tmp += "  -  ";
+            tmp += tracks_struct->item[index.row()].artist[0].name;
+        }
         items.append(new QStandardItem(tmp));
         uint indx = (uint)playlist_IModel->rowCount() + 1;
         playlist_id[indx - 1] = tracks_struct->item[index.row()].id;
