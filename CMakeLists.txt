@@ -27,6 +27,11 @@ endif()
 #    endif()
 #endif()
 
+if(CMAKE_SYSTEM_NAME STREQUAL "FreeBSD")
+                include_directories("/usr/local/include/")
+                link_directories("/usr/local/lib/")
+endif()
+
 find_package(Qt5 COMPONENTS Widgets REQUIRED)
 find_package(Qt5 COMPONENTS Multimedia REQUIRED)
 find_package(Qt5 COMPONENTS Svg REQUIRED)
