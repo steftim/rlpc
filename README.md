@@ -1,4 +1,4 @@
-# rlpc
+# rlpc  [Deprecated]
 rlpc music player
 
 ## Anarchy reigns here. At your own risk.
